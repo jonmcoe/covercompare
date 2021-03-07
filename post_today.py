@@ -4,7 +4,6 @@ import combine
 import fetch
 import tweet
 
-
 if __name__ == '__main__':
     daily = fetch.download_dailynews()
     post = fetch.download_nypost()

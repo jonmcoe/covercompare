@@ -12,7 +12,7 @@ def combine(path1, path2, output_path):
         left, right = shorter, taller_resized
     else:
         left, right = taller_resized, shorter
-    output_img.paste(left, (0,0))
+    output_img.paste(left, (0, 0))
     output_img.paste(right, (shorter.size[0], 0))
     output_img.save(output_path, 'JPEG')
     return output_path
