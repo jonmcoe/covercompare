@@ -21,7 +21,8 @@ def download_nypost():
 
 
 def download_dailynews():
-    return _save_image('https://cdn.freedomforum.org/dfp/jpg6/lg/NY_DN.jpg', 'dailynews')
+    day = datetime.date.today().day
+    return _save_image(f'https://cdn.freedomforum.org/dfp/jpg{day}/lg/NY_DN.jpg', 'dailynews')
 
 
 if __name__ == '__main__':
