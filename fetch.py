@@ -22,6 +22,7 @@ def download_nypost():
 
 def download_dailynews():
     day = datetime.date.today().day
+    # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
     return _save_image(f'https://cdn.freedomforum.org/dfp/jpg{day}/lg/NY_DN.jpg', 'dailynews')
 
 
