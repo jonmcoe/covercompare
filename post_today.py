@@ -2,8 +2,8 @@ import datetime
 import sys
 
 import combine
+import discord
 import fetch
-import tweet
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -11,7 +11,7 @@ if __name__ == '__main__':
     else:
         dt = None
     daily = fetch.download_dailynews(dt)
-    post = fetch.download_nypost(dt)
+    post = fetch.download_nypost_direct(dt)
     combined = combine.combine(daily, post, f'./generated_images/{datetime.date.today().isoformat()}-combined.jpg')
-    status = tweet.tweet_single_image(combined)
+    status = discord.post(combined)
     print(status.text)
