@@ -1,10 +1,10 @@
 import datetime
-import env
+import os
 import requests
 
 def post(path):
 
-    webhook_url = env.get('COVERCOMPARE_DISCORD_WEBHOOK')
+    webhook_url = os.environ.get('COVERCOMPARE_DISCORD_WEBHOOK')
 
     current_date = datetime.now()
     formatted_date = current_date.strftime("%A, %B %d")
