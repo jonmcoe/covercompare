@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import requests
 
@@ -15,10 +16,10 @@ def post(path):
             "file": ("image.jpg", f)
         }
         payload = {
-            "payload_json": (
-                '{"content": ' + formatted_date + ', '
-                '"embeds": [{"image": {"url": "attachment://image.jpg"}}]}'
-            )
+            "payload_json": json.dumps({
+                "content": formatted_date,
+                "embeds": [{"image": {"url": "attachment://image.jpg"}}]
+                })
         }
         response = requests.post(webhook_url, data=payload, files=files)
         return response
