@@ -3,11 +3,11 @@ import json
 import os
 import requests
 
-def post(path):
+def post(path, d=None):
 
     webhook_url = os.environ.get('COVERCOMPARE_DISCORD_WEBHOOK')
 
-    current_date = datetime.datetime.now()
+    current_date = d or datetime.datetime.now()
     formatted_date = current_date.strftime("%A, %B %d")
 
     # Open the image file in binary mode

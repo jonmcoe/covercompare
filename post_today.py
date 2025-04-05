@@ -13,5 +13,5 @@ if __name__ == '__main__':
     daily = fetch.download_dailynews(dt)
     post = fetch.download_nypost_direct(dt)
     combined = combine.combine(daily, post, f'./generated_images/{datetime.date.today().isoformat()}-combined.jpg')
-    status = discord.post(combined)
+    status = discord.post(combined, dt)
     print(status.text)
