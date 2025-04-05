@@ -3,7 +3,7 @@ import json
 import os
 import requests
 
-def post(path, current_date):
+def post(path, current_date, extra_text=""):
 
     webhook_url = os.environ.get('COVERCOMPARE_DISCORD_WEBHOOK')
 
@@ -16,7 +16,7 @@ def post(path, current_date):
         }
         payload = {
             "payload_json": json.dumps({
-                "content": formatted_date,
+                "content": extra_text + formatted_date,
                 "embeds": [{"image": {"url": "attachment://image.jpg"}}]
                 })
         }
