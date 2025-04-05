@@ -7,7 +7,7 @@ def post(path, current_date, extra_text=""):
 
     webhook_url = os.environ.get('COVERCOMPARE_DISCORD_WEBHOOK')
 
-    formatted_date = current_date.strftime("%A, %B %d")
+    formatted_date = current_date.strftime("%A, %B %d %Y")
 
     # Open the image file in binary mode
     with open(path, "rb") as f:
