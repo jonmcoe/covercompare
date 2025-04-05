@@ -11,7 +11,7 @@ def _save_image(url, papername):
     return path
 
 
-# def download_nypost(d=None):
+# def download_nypost(d):
 #     today = d or datetime.date.today()
 #     today_string = today.strftime('%B-%d-%Y').lower().replace('-0', '-')
 #     page_html = requests.get(f'https://nypost.com/cover/{today_string}/').content
@@ -21,7 +21,7 @@ def _save_image(url, papername):
 #     return _save_image(image_url, 'nypost')
 
 
-def download_nypost_direct(d=None):
+def download_nypost_direct(d):
     today = d or datetime.date.today()
     template = "https://nypost.com/wp-content/uploads/sites/2/{0}/{1}/{2}.P1_LCF.jpg?resize=1393,1536&quality=90&strip=all"
     year = today.strftime('%Y')
@@ -32,7 +32,7 @@ def download_nypost_direct(d=None):
     return _save_image(url, 'nypost')
 
 
-def download_dailynews(d=None):
+def download_dailynews(d):
     d = d or datetime.date.today()
     day = d.day
     # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
@@ -40,5 +40,6 @@ def download_dailynews(d=None):
 
 
 if __name__ == '__main__':
-    download_nypost_direct()
-    download_dailynews()
+    d = datetime.date.today()
+    download_nypost_direct(d)
+    download_dailynews(d)
