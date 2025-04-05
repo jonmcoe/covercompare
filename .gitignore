@@ -1,6 +1,6 @@
 credentials.py
-downloads/
-generated_images/
+downloads/*.jpg
+generated_images/*.jpg
 __pycache__
 .idea
 env
