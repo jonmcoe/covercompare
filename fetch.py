@@ -36,6 +36,8 @@ def download_dailynews(d):
     # probably broken Feb 2026
     # TODO: try https://www.frontpages.com/daily-news --> https://www.frontpages.com/g/2026/02/14/daily-news-103321aw18n9j.webp
     #       but the hash changes each day!
+    #       if we only need thumbnail, might be best to pull a *different* page and take thumbnail out of js section.
+    #       https://www.frontpages.com/new-york-post/ --> https://www.frontpages.com//t/2026/02/14/daily-news-103321aw1.webp
     d = d or datetime.date.today()
     day = d.day
     # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
