@@ -10,8 +10,8 @@ if __name__ == '__main__':
         dt = datetime.date.fromisoformat(sys.argv[1])
     else:
         dt = datetime.date.today()
-    daily = fetch.download_dailynews(dt)
+    newsday = fetch.download_newsday(dt)
     post = fetch.download_nypost_direct(dt)
-    combined = combine.combine(daily, post, f'./generated_images/{dt.isoformat()}-combined.jpg')
+    combined = combine.combine(newsday, post, f'./generated_images/{dt.isoformat()}-combined.jpg')
     status = discord.post(combined, dt)
     print(status.text)

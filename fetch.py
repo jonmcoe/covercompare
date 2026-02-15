@@ -33,13 +33,23 @@ def download_nypost_direct(d):
 
 
 def download_dailynews(d):
+    # probably broken Feb 2026
+    # TODO: try https://www.frontpages.com/daily-news --> https://www.frontpages.com/g/2026/02/14/daily-news-103321aw18n9j.webp
+    #       but the hash changes each day!
     d = d or datetime.date.today()
     day = d.day
     # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
     return _save_image(f'https://cdn.freedomforum.org/dfp/jpg{day}/lg/NY_DN.jpg', 'dailynews')
+
+def download_newsday(d):
+    d = d or datetime.date.today()
+    day = d.isoformat()
+    # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
+    return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{day}/front-page-large.jpg', 'newsday')
 
 
 if __name__ == '__main__':
     d = datetime.date.today()
     download_nypost_direct(d)
     download_dailynews(d)
+    download_newsday(d)
