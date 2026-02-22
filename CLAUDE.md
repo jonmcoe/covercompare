@@ -35,6 +35,8 @@ Defines paper fetcher mappings and named run configs. The `new_york` config runs
 
 ## Directory conventions
 
+Both directories are auto-created on first run and fully gitignored.
+
 - `downloads/` — individual fetched covers, named `YYYY-MM-DD-papername.ext`
 - `generated_images/` — combined output, named `YYYY-MM-DD-{label}.jpg`
 

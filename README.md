@@ -26,15 +26,6 @@ Requires Python 3 and: `pillow`, `requests`, `beautifulsoup4`, `pyyaml`, `tweepy
 |---|---|
 | `COVERCOMPARE_DISCORD_WEBHOOK` | Discord webhook URL to post images to |
 
-### Directories
-
-Create these if they don't exist:
-
-```
-downloads/          # individual fetched cover images
-generated_images/   # combined output images
-```
-
 ## Usage
 
 ### Post today's covers
