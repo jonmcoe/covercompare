@@ -22,7 +22,7 @@ def combine(paths, output_path, trim_flags=None):
             img = _trim_whitespace(img)
         images.append(img)
 
-    target_height = min(img.size[1] for img in images)
+    target_height = max(img.size[1] for img in images)
 
     resized = []
     for img in images:
