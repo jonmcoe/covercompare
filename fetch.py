@@ -1,7 +1,9 @@
+import base64
 import bs4
 import datetime
 import json
 import os
+import re
 import requests
 
 
@@ -38,16 +40,14 @@ def download_nypost_direct(d):
 
 def download_dailynews(d):
     d = d or datetime.date.today()
-    page_html = requests.get('https://www.frontpages.com/daily-news/').content
-    soup = bs4.BeautifulSoup(page_html, features="html.parser")
-    script_tag = soup.find('script', attrs={'type': 'application/ld+json'})
-    data = json.loads(script_tag.string)
-    if isinstance(data, list):
-        data = data[0]
-    # data['image'] is a list: [0] = /share/ JPEG, [1] = /g/ full-size webp (404s without auth)
-    # /t/ thumbnail (same slug, different prefix) is publicly accessible
-    g_url = data['image'][1]
-    full_url = g_url.replace('/g/', '/t/', 1)
+    r = requests.get('https://www.frontpages.com/daily-news/', headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+    })
+    # Full-size URL is base64-encoded in an obfuscated inline script to prevent naive scraping.
+    # The slug in og:image/JSON-LD is truncated and 404s; this one is complete.
+    m = re.search(r"atob\('([A-Za-z0-9+/=]+)'\)", r.text)
+    path = base64.b64decode(m.group(1)).decode('utf-8')
+    full_url = 'https://www.frontpages.com' + path
     return _save_image(full_url, 'dailynews')
 
 
