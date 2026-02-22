@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image, ImageChops
 
 
@@ -12,6 +14,7 @@ def _trim_whitespace(img):
 
 
 def combine(paths, output_path, trim_flags=None):
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if trim_flags is None:
         trim_flags = [False] * len(paths)
 

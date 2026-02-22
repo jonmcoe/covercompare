@@ -6,6 +6,7 @@ import requests
 
 
 def _save_image(url, papername):
+    os.makedirs('./downloads', exist_ok=True)
     image_res = requests.get(url)
     ext = os.path.splitext(url.split('?')[0])[1] or '.jpg'
     path = f'./downloads/{datetime.date.today().isoformat()}-{papername}{ext}'
