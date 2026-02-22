@@ -1,11 +1,14 @@
-# import bs4
+import bs4
 import datetime
+import json
+import os
 import requests
 
 
 def _save_image(url, papername):
     image_res = requests.get(url)
-    path = f'./downloads/{datetime.date.today().isoformat()}-{papername}.jpg'
+    ext = os.path.splitext(url.split('?')[0])[1] or '.jpg'
+    path = f'./downloads/{datetime.date.today().isoformat()}-{papername}{ext}'
     with open(path, 'wb') as f:
         f.write(image_res.content)
     return path
@@ -33,20 +36,23 @@ def download_nypost_direct(d):
 
 
 def download_dailynews(d):
-    # probably broken Feb 2026
-    # TODO: try https://www.frontpages.com/daily-news --> https://www.frontpages.com/g/2026/02/14/daily-news-103321aw18n9j.webp
-    #       but the hash changes each day!
-    #       if we only need thumbnail, might be best to pull a *different* page and take thumbnail out of js section.
-    #       https://www.frontpages.com/new-york-post/ --> https://www.frontpages.com//t/2026/02/14/daily-news-103321aw1.webp
     d = d or datetime.date.today()
-    day = d.day
-    # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
-    return _save_image(f'https://cdn.freedomforum.org/dfp/jpg{day}/lg/NY_DN.jpg', 'dailynews')
+    page_html = requests.get('https://www.frontpages.com/daily-news/').content
+    soup = bs4.BeautifulSoup(page_html, features="html.parser")
+    script_tag = soup.find('script', attrs={'type': 'application/ld+json'})
+    data = json.loads(script_tag.string)
+    if isinstance(data, list):
+        data = data[0]
+    # data['image'] is a list: [0] = /share/ JPEG, [1] = /g/ full-size webp (404s without auth)
+    # /t/ thumbnail (same slug, different prefix) is publicly accessible
+    g_url = data['image'][1]
+    full_url = g_url.replace('/g/', '/t/', 1)
+    return _save_image(full_url, 'dailynews')
+
 
 def download_newsday(d):
     d = d or datetime.date.today()
     day = d.isoformat()
-    # https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
     return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{day}/front-page-large.jpg', 'newsday')
 
 

@@ -1,18 +1,42 @@
-from PIL import Image
+from PIL import Image, ImageChops
 
 
-def combine(path1, path2, output_path):
-    img1 = Image.open(path1)
-    img2 = Image.open(path2)
-    shorter = min(img1, img2, key=lambda x: x.size[1])
-    taller = max(img1, img2, key=lambda x: x.size[1])
-    taller_resized = taller.resize(shorter.size)
-    output_img = Image.new('RGB', (2 * shorter.size[0], shorter.size[1]), (250, 250, 250))
-    if img1.size[1] < img2.size[1]:
-        left, right = shorter, taller_resized
-    else:
-        left, right = taller_resized, shorter
-    output_img.paste(left, (0, 0))
-    output_img.paste(right, (shorter.size[0], 0))
+def _trim_whitespace(img):
+    bg = Image.new('RGB', img.size, (255, 255, 255))
+    diff = ImageChops.difference(img.convert('RGB'), bg)
+    diff = diff.point(lambda p: 0 if p < 10 else 255)
+    bbox = diff.getbbox()
+    if bbox:
+        return img.crop(bbox)
+    return img
+
+
+def combine(paths, output_path, trim_flags=None):
+    if trim_flags is None:
+        trim_flags = [False] * len(paths)
+
+    images = []
+    for path, trim in zip(paths, trim_flags):
+        img = Image.open(path).convert('RGB')
+        if trim:
+            img = _trim_whitespace(img)
+        images.append(img)
+
+    target_height = min(img.size[1] for img in images)
+
+    resized = []
+    for img in images:
+        w, h = img.size
+        new_w = round(w * target_height / h)
+        resized.append(img.resize((new_w, target_height), Image.LANCZOS))
+
+    total_width = sum(img.size[0] for img in resized)
+    output_img = Image.new('RGB', (total_width, target_height), (250, 250, 250))
+
+    x = 0
+    for img in resized:
+        output_img.paste(img, (x, 0))
+        x += img.size[0]
+
     output_img.save(output_path, 'JPEG')
     return output_path

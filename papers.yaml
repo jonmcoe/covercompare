@@ -1,0 +1,16 @@
+papers:
+  nypost:
+    name: "NY Post"
+    fetcher: nypost
+  newsday:
+    name: "Newsday"
+    fetcher: newsday
+    trim_whitespace: true
+  dailynews:
+    name: "NY Daily News"
+    fetcher: dailynews
+
+default: [newsday, nypost]
+
+configs:
+  new_york: [dailynews, newsday, nypost]
