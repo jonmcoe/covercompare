@@ -2,10 +2,12 @@ papers:
   # NY papers
   nypost:
     name: "NY Post"
+    format: tabloid
     sources:
       - source: nypost_direct
   newsday:
     name: "Newsday"
+    format: tabloid
     trim_whitespace: true
     sources:
       - source: newsday_cloudfront       # ~1542px, best quality
@@ -13,20 +15,15 @@ papers:
         code: NY_ND                      # 700px fallback
   dailynews:
     name: "NY Daily News"
+    format: tabloid
     sources:
       - source: frontpages
         slug: daily-news
 
-  # National papers — kiosko (750px, good for papers not on frontpages/freedomforum)
-  wsj:
-    name: "Wall Street Journal"
-    sources:
-      - source: kiosko
-        slug: wsj                        # 750px; page date used (WSJ skips Sundays)
-
   # National papers — frontpages primary (1200px), freedomforum fallback (700px)
   nytimes:
     name: "NY Times"
+    format: broadsheet
     sources:
       - source: frontpages
         slug: the-new-york-times
@@ -34,15 +31,25 @@ papers:
         code: NY_NYT
   washpost:
     name: "Washington Post"
+    format: broadsheet
     sources:
       - source: frontpages
         slug: the-washington-post
       - source: freedomforum
         code: DC_WP
 
+  # National papers — kiosko (750px)
+  wsj:
+    name: "Wall Street Journal"
+    format: broadsheet
+    sources:
+      - source: kiosko
+        slug: wsj                        # 750px; page date used (WSJ skips Sundays)
+
   # National papers — freedomforum primary, frontpages fallback
   boston-globe:
     name: "Boston Globe"
+    format: broadsheet
     sources:
       - source: freedomforum
         code: MA_BG
@@ -50,6 +57,7 @@ papers:
         slug: the-boston-globe
   miami-herald:
     name: "Miami Herald"
+    format: broadsheet
     sources:
       - source: freedomforum
         code: FL_MH                      # note: sometimes stale on weekends

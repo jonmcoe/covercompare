@@ -35,6 +35,12 @@ Defines paper sources and named run configs. The `new_york` config runs all thre
 
 Each paper has a `sources` list tried in order — first success wins, error only if all fail. This supports silent fallback between sources for papers available in multiple places.
 
+## Paper formats
+
+Papers have a `format` field in `papers.yaml`: `tabloid` (NY Post, Daily News, Newsday — roughly square-ish aspect ratio) or `broadsheet` (NYT, WSJ, WaPo, Globe etc — tall and narrow). Mixing formats in a single run works but looks awkward: broadsheets will dominate height and tabloids will appear wide and stubby by comparison. The `new_york` config is all-tabloid; most national paper combos are all-broadsheet.
+
+The `format` field is metadata only — `combine.py` doesn't use it. A future enhancement could warn or auto-group by format.
+
 ## Adding a new paper
 
 To add a paper, only `papers.yaml` needs to change (no Python edits needed for `frontpages` or `freedomforum` sources). Add an entry with a `sources` list:
@@ -60,6 +66,56 @@ my-paper:
 - Code format is `STATE_ABBREV` e.g. `MA_BG`, `DC_WP`, `NY_NYT`; day-of-month in URL is **not zero-padded** (`jpg5` not `jpg05`)
 - NY Post and NY Daily News are not on freedomforum; use frontpages for those
 - **Weekend staleness risk**: some papers (Miami Herald, Star Tribune, Arizona Republic) have been observed returning the previous day's image on weekends with a 200 response — no error raised, just silently stale content
+- **Known working codes** (swept 2026-02-22, 46 found from 2360 probes — freshness as of that Sunday):
+
+  | Code | Paper | Fresh? |
+  |---|---|---|
+  | NY_NYT | NY Times | ✓ |
+  | NY_ND | Newsday | ✓ |
+  | DC_WP | Washington Post | ✓ |
+  | MA_BG | Boston Globe | ✓ |
+  | CA_LAT | LA Times | ✓ |
+  | CA_SFC | SF Chronicle | ✓ |
+  | CA_MN | Mercury News | ✓ |
+  | CA_DN | Daily News (CA) | ✓ |
+  | TX_DMN | Dallas Morning News | ✓ |
+  | TX_HC | Houston Chronicle | ✓ |
+  | IL_CST | Chicago Sun-Times | ✓ |
+  | IL_JG | Joliet Herald-News | ✓ |
+  | PA_PI | Pittsburgh Post-Gazette | ✓ |
+  | OH_TB | Toledo Blade | ✓ |
+  | OH_DDN | Dayton Daily News | ✓ |
+  | GA_AJC | Atlanta Journal-Constitution | ✓ |
+  | WA_ST | Seattle Times | ✓ |
+  | CO_DH | Denver Post | ✓ |
+  | NJ_SL | Star-Ledger (NJ) | ✓ |
+  | MN_PP | Pioneer Press | ✓ |
+  | VA_DP | Daily Progress | ✓ |
+  | NE_CT | Omaha World-Herald | ✓ |
+  | SC_MN | The State (SC) | ✓ |
+  | FL_MH | Miami Herald | stale weekends |
+  | MI_DFP | Detroit Free Press | stale weekends |
+  | MN_ST | Star Tribune | stale weekends |
+  | OR_RG | Oregonian | stale weekends |
+  | MA_ST | Springfield Republican | stale weekends |
+  | NV_SUN | Las Vegas Sun | stale weekends |
+  | TX_ST | San Antonio Express | frequently stale |
+  | IL_JS | Journal Star (IL) | frequently stale |
+  | IL_PDT | Peoria Journal Star | frequently stale |
+  | OH_CD | Columbus Dispatch | frequently stale |
+  | MI_HS | Holland Sentinel | frequently stale |
+  | GA_AC | Augusta Chronicle | frequently stale |
+  | AZ_AR | Arizona Republic | frequently stale |
+  | WA_SUN | Spokesman-Review | frequently stale |
+  | IN_PI | Indianapolis Star | frequently stale |
+  | IN_JC | Journal & Courier (IN) | frequently stale |
+  | IN_IS | Indiana State Journal | frequently stale |
+  | IN_SP | South Bend Tribune | frequently stale |
+  | KY_CJ | Courier-Journal (KY) | frequently stale |
+  | KY_DN | Daily News (KY) | frequently stale |
+  | TN_DH | Daily Herald (TN) | frequently stale |
+  | TN_JS | Jackson Sun | frequently stale |
+  | WI_SP | Wisconsin State Journal | frequently stale |
 
 **`kiosko` source** — 750px wide JPEG, good for papers not on frontpages/freedomforum (e.g. WSJ)
 - Browse index: https://www.kiosko.net/us/ — URL slug is from `/us/np/{slug}.html`
