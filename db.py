@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     webhook_url       TEXT    NOT NULL,
     papers            TEXT    NOT NULL,
     label             TEXT,
-    secret_token      TEXT    NOT NULL,
     ip_address        TEXT,
     created_at        TEXT    NOT NULL,
     last_posted_at    TEXT,
@@ -36,15 +35,15 @@ def init():
         conn.executescript(SCHEMA)
 
 
-def create_subscription(webhook_url, papers, label, secret_token, ip_address):
+def create_subscription(webhook_url, papers, label, ip_address):
     now = datetime.datetime.utcnow().isoformat()
     papers_json = json.dumps(papers)
     with _connect() as conn:
         cur = conn.execute(
             """INSERT INTO subscriptions
-               (webhook_url, papers, label, secret_token, ip_address, created_at)
-               VALUES (?, ?, ?, ?, ?, ?)""",
-            (webhook_url, papers_json, label, secret_token, ip_address, now),
+               (webhook_url, papers, label, ip_address, created_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            (webhook_url, papers_json, label, ip_address, now),
         )
         sub_id = cur.lastrowid
     return get_subscription(sub_id)

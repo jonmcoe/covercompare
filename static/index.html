@@ -418,7 +418,7 @@
         <input type="text" id="sub-label" placeholder="My daily news" maxlength="80" />
       </div>
       <div>
-        <label>Papers to deliver (uses current selection if empty)</label>
+        <label>Papers to deliver</label>
         <div id="sub-papers-note" style="font-size:0.8rem;color:#666;margin-top:4px;"></div>
       </div>
       <div>
@@ -427,13 +427,7 @@
     </div>
 
     <div id="token-result">
-      <p>Subscription created! Your secret token (shown once — save it now):</p>
-      <div class="token-row">
-        <code id="token-display"></code>
-        <button class="copy-btn" id="copy-token-btn">Copy</button>
-      </div>
-      <p class="warning-text">You need this token to unsubscribe. It cannot be recovered.</p>
-      <p style="font-size:0.78rem;color:#6aba8a;margin-top:6px;">Subscription ID: <span id="sub-id-display"></span></p>
+      <p>Subscribed! Subscription ID: <span id="sub-id-display"></span>. Use your webhook URL to unsubscribe.</p>
     </div>
 
     <div id="sub-msg"></div>
@@ -447,8 +441,8 @@
           <input type="text" id="unsub-id" placeholder="123" />
         </div>
         <div style="flex:3">
-          <label>Secret token</label>
-          <input type="text" id="unsub-token" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          <label>Webhook URL</label>
+          <input type="text" id="unsub-token" placeholder="https://discord.com/api/webhooks/..." />
         </div>
       </div>
       <div>

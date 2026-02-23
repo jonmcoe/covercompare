@@ -303,8 +303,6 @@ function bindSubscribeForm() {
         return;
       }
 
-      // Show token result
-      document.getElementById('token-display').textContent = data.secret_token;
       document.getElementById('sub-id-display').textContent = data.id;
       document.getElementById('token-result').style.display = 'block';
       msg.textContent = 'Subscribed! Test image delivered to your Discord.';
@@ -318,14 +316,6 @@ function bindSubscribeForm() {
     }
   });
 
-  document.getElementById('copy-token-btn').addEventListener('click', () => {
-    const token = document.getElementById('token-display').textContent;
-    navigator.clipboard.writeText(token).then(() => {
-      const btn = document.getElementById('copy-token-btn');
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 2000);
-    });
-  });
 }
 
 function bindUnsubscribeForm() {
@@ -340,7 +330,7 @@ function bindUnsubscribeForm() {
     const token = document.getElementById('unsub-token').value.trim();
 
     if (!id || !token) {
-      msg.textContent = 'Please enter your subscription ID and secret token.';
+      msg.textContent = 'Please enter your subscription ID and webhook URL.';
       msg.className = 'err';
       return;
     }
@@ -350,13 +340,13 @@ function bindUnsubscribeForm() {
     try {
       const res = await fetch(`/api/subscriptions/${encodeURIComponent(id)}`, {
         method: 'DELETE',
-        headers: { 'X-Subscription-Token': token },
+        headers: { 'X-Webhook-Url': token },
       });
       if (res.status === 204) {
         msg.textContent = 'Unsubscribed successfully.';
         msg.className = 'ok';
       } else if (res.status === 403) {
-        msg.textContent = 'Invalid ID or token.';
+        msg.textContent = 'Invalid ID or webhook URL.';
         msg.className = 'err';
       } else {
         msg.textContent = `Error: HTTP ${res.status}`;

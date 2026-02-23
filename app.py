@@ -182,18 +182,15 @@ def create_subscription():
     except Exception as e:
         return jsonify({'error': f'Test delivery error: {e}'}), 400
 
-    secret_token = str(uuid.uuid4())
     sub = db.create_subscription(
         webhook_url=webhook_url,
         papers=papers,
         label=label,
-        secret_token=secret_token,
         ip_address=ip,
     )
 
     return jsonify({
         'id': sub['id'],
-        'secret_token': secret_token,
         'label': sub['label'],
         'papers': papers,
         'created_at': sub['created_at'],
@@ -202,9 +199,9 @@ def create_subscription():
 
 @app.route('/api/subscriptions/<int:sub_id>', methods=['DELETE'])
 def delete_subscription(sub_id):
-    token = request.headers.get('X-Subscription-Token', '')
+    webhook_url = request.headers.get('X-Webhook-Url', '')
     sub = db.get_subscription(sub_id)
-    if sub is None or sub['secret_token'] != token:
+    if sub is None or sub['webhook_url'] != webhook_url:
         abort(403)
     db.deactivate_subscription(sub_id)
     return '', 204
@@ -212,9 +209,9 @@ def delete_subscription(sub_id):
 
 @app.route('/api/subscriptions/<int:sub_id>/preview')
 def preview_subscription(sub_id):
-    token = request.headers.get('X-Subscription-Token', '')
+    webhook_url = request.headers.get('X-Webhook-Url', '')
     sub = db.get_subscription(sub_id)
-    if sub is None or sub['secret_token'] != token:
+    if sub is None or sub['webhook_url'] != webhook_url:
         abort(403)
     if not sub['active']:
         return jsonify({'error': 'Subscription is inactive'}), 400
