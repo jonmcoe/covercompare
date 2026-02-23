@@ -33,6 +33,21 @@ python flashback.py 2023-04-01
 
 Defines paper fetcher mappings and named run configs. The `new_york` config runs all three papers ordered left-to-right by political lean.
 
+## Adding a new paper
+
+Two generic fetchers are available in `fetch.py`:
+
+**`_fetch_frontpages(slug, papername, d)`** — scrapes frontpages.com full-res image (1200px wide) via base64-obfuscated inline script. Higher quality, more papers available.
+- Browse index: https://www.frontpages.com/ — click any paper, the URL slug is e.g. `the-new-york-times`
+- Note: og:image/JSON-LD on these pages contains a *truncated* slug that 404s; the real one is only in the script tag
+
+**`_fetch_freedomforum(code, papername, d)`** — hits freedomforum.org CDN directly (700px wide). Patchier coverage but no scraping needed.
+- Browse index: https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
+- Code format is `STATE_ABBREV` e.g. `NY_DN`, `MA_BG`, `DC_WP`
+- Broken for Daily News as of Feb 2026; test before relying on it
+
+To add a paper: add a function in `fetch.py`, register it in `FETCHERS` in `post_today.py`, add an entry in `papers.yaml`.
+
 ## Directory conventions
 
 Both directories are auto-created on first run and fully gitignored.
