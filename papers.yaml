@@ -76,3 +76,4 @@ default: [newsday, nypost]
 
 configs:
   new_york: [dailynews, newsday, nypost]
+  national: [nytimes, usatoday, wsj]
