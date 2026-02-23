@@ -10,6 +10,7 @@ def _save_image(url, papername):
     image_res = requests.get(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
+    image_res.raise_for_status()
     ext = os.path.splitext(url.split('?')[0])[1] or '.jpg'
     path = f'./downloads/{datetime.date.today().isoformat()}-{papername}{ext}'
     with open(path, 'wb') as f:

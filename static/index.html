@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoverCompare</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #111;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      background: #222;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    .preset-btn:hover { background: #333; color: #fff; }
+    .preset-btn.active { background: #1a56db; border-color: #1a56db; color: #fff; }
+
+    .paper-select-wrap {
+      position: relative;
+    }
+
+    #paper-dropdown-btn {
+      background: #222;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    #paper-dropdown-btn:hover { background: #333; color: #fff; }
+
+    #paper-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px;
+      z-index: 100;
+      min-width: 200px;
+      max-height: 320px;
+      overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    }
+    #paper-dropdown.open { display: block; }
+
+    #paper-filter {
+      width: 100%;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 3px;
+      color: #eee;
+      font-size: 0.8rem;
+      padding: 5px 8px;
+      margin-bottom: 6px;
+      outline: none;
+    }
+    #paper-filter:focus { border-color: #1a56db; }
+
+    .paper-check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      user-select: none;
+    }
+    .paper-check-item:hover { background: #2a2a2a; }
+    .paper-check-item input { cursor: pointer; accent-color: #1a56db; }
+
+    /* Selected paper chips */
+    #selected-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chip {
+      background: #1a56db22;
+      border: 1px solid #1a56db88;
+      color: #90b5ff;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .chip-remove {
+      cursor: pointer;
+      opacity: 0.6;
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+    .chip-remove:hover { opacity: 1; }
+
+    /* Main viewer */
+    #viewer {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      overflow-x: auto;
+      min-height: 300px;
+    }
+
+    .paper-col {
+      flex: 1;
+      min-width: 120px;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .paper-col-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .paper-col img {
+      max-height: 82vh;
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      display: block;
+      cursor: zoom-in;
+      transition: filter 0.15s;
+    }
+    .paper-col img:hover { filter: brightness(1.08); }
+
+    .paper-col .loading {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      max-height: 82vh;
+      background: #222;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-size: 0.8rem;
+    }
+
+    .paper-col .error {
+      width: 100%;
+      padding: 16px;
+      background: #2a1010;
+      border: 1px solid #5a2020;
+      border-radius: 4px;
+      color: #c66;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    #empty-state {
+      margin: auto;
+      color: #444;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    /* Subscription section */
+    #sub-section {
+      padding: 24px;
+      border-top: 1px solid #222;
+      background: #0d0d0d;
+    }
+
+    #sub-toggle {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #aaa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+    #sub-toggle:hover { color: #ccc; }
+    #sub-toggle-arrow { font-size: 0.7rem; transition: transform 0.15s; }
+    #sub-toggle.open #sub-toggle-arrow { transform: rotate(90deg); }
+
+    #sub-content { display: none; margin-top: 16px; }
+
+    .sub-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 520px;
+    }
+
+    .sub-form input[type=text], .sub-form input[type=url] {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #eee;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .sub-form input:focus { outline: none; border-color: #1a56db; }
+
+    .sub-form label {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .sub-form-row { display: flex; gap: 8px; }
+
+    .btn-primary {
+      background: #1a56db;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: #1e63f5; }
+    .btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+    .btn-danger {
+      background: #8b1a1a;
+      color: #ffcccc;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-danger:hover { background: #a52020; }
+
+    .sub-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #333;
+    }
+    .sub-tab {
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      color: #666;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .sub-tab.active { color: #fff; border-bottom-color: #1a56db; }
+
+    .sub-panel { display: none; }
+    .sub-panel.active { display: block; }
+
+    #token-result {
+      display: none;
+      background: #0a2010;
+      border: 1px solid #1a5a30;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    #token-result p { font-size: 0.8rem; color: #6aba8a; margin-bottom: 8px; }
+    #token-result .token-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    #token-result code {
+      font-family: monospace;
+      background: #111;
+      border: 1px solid #333;
+      padding: 6px 10px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      color: #cfc;
+      flex: 1;
+      word-break: break-all;
+    }
+    .copy-btn {
+      background: #222;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 6px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+    .copy-btn:hover { background: #333; }
+
+    .warning-text {
+      font-size: 0.75rem;
+      color: #f0a050;
+      margin-top: 8px;
+    }
+
+    #sub-msg { margin-top: 10px; font-size: 0.82rem; }
+    #sub-msg.ok { color: #6aba8a; }
+    #sub-msg.err { color: #c66; }
+
+    #unsub-msg { margin-top: 10px; font-size: 0.82rem; }
+    #unsub-msg.ok { color: #6aba8a; }
+    #unsub-msg.err { color: #c66; }
+
+    /* Zoom modal */
+    #zoom-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #zoom-modal.open { display: flex; }
+    #zoom-modal img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CoverCompare</h1>
+  <div class="controls">
+    <div class="presets" id="presets"></div>
+    <div class="paper-select-wrap">
+      <button id="paper-dropdown-btn">+ Papers</button>
+      <div id="paper-dropdown"></div>
+    </div>
+    <div id="selected-chips"></div>
+  </div>
+</header>
+
+<div id="viewer">
+  <div id="empty-state">Select papers above to view today's covers</div>
+</div>
+
+<div id="sub-section">
+  <h2 id="sub-toggle"><span id="sub-toggle-arrow">▶</span> Daily Discord Delivery</h2>
+  <div id="sub-content">
+  <div class="sub-tabs">
+    <div class="sub-tab active" data-panel="subscribe">Subscribe</div>
+    <div class="sub-tab" data-panel="unsubscribe">Unsubscribe</div>
+  </div>
+
+  <div class="sub-panel active" id="panel-subscribe">
+    <div class="sub-form">
+      <div>
+        <label>Discord webhook URL</label>
+        <input type="url" id="sub-webhook" placeholder="https://discord.com/api/webhooks/..." />
+      </div>
+      <div>
+        <label>Label (optional)</label>
+        <input type="text" id="sub-label" placeholder="My daily news" maxlength="80" />
+      </div>
+      <div>
+        <label>Papers to deliver (uses current selection if empty)</label>
+        <div id="sub-papers-note" style="font-size:0.8rem;color:#666;margin-top:4px;"></div>
+      </div>
+      <div>
+        <button class="btn-primary" id="sub-btn">Subscribe &amp; Send Test</button>
+      </div>
+    </div>
+
+    <div id="token-result">
+      <p>Subscription created! Your secret token (shown once — save it now):</p>
+      <div class="token-row">
+        <code id="token-display"></code>
+        <button class="copy-btn" id="copy-token-btn">Copy</button>
+      </div>
+      <p class="warning-text">You need this token to unsubscribe. It cannot be recovered.</p>
+      <p style="font-size:0.78rem;color:#6aba8a;margin-top:6px;">Subscription ID: <span id="sub-id-display"></span></p>
+    </div>
+
+    <div id="sub-msg"></div>
+  </div>
+
+  <div class="sub-panel" id="panel-unsubscribe">
+    <div class="sub-form">
+      <div class="sub-form-row">
+        <div style="flex:1">
+          <label>Subscription ID</label>
+          <input type="text" id="unsub-id" placeholder="123" />
+        </div>
+        <div style="flex:3">
+          <label>Secret token</label>
+          <input type="text" id="unsub-token" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+        </div>
+      </div>
+      <div>
+        <button class="btn-danger" id="unsub-btn">Unsubscribe</button>
+      </div>
+    </div>
+    <div id="unsub-msg"></div>
+  </div>
+  </div> <!-- #sub-content -->
+</div>
+
+<div id="zoom-modal"><img id="zoom-img" alt="" /></div>
+<script src="app.js"></script>
+</body>
+</html>

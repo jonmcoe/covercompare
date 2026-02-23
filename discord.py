@@ -3,9 +3,10 @@ import json
 import os
 import requests
 
-def post(path, current_date, extra_text=""):
+def post(path, current_date, extra_text="", webhook_url=None):
 
-    webhook_url = os.environ.get('COVERCOMPARE_DISCORD_WEBHOOK')
+    if webhook_url is None:
+        webhook_url = os.environ.get('COVERCOMPARE_DISCORD_WEBHOOK')
 
     formatted_date = current_date.strftime("%A, %B %d %Y")
 
