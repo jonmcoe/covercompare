@@ -11,6 +11,10 @@ FETCHERS = {
     'nypost': fetch.download_nypost_direct,
     'newsday': fetch.download_newsday,
     'dailynews': fetch.download_dailynews,
+    'nytimes': fetch.download_nytimes,
+    'washpost': fetch.download_washpost,
+    'boston-globe': fetch.download_boston_globe,
+    'miami-herald': fetch.download_miami_herald,
 }
 
 if __name__ == '__main__':

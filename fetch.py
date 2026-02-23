@@ -75,6 +75,22 @@ def download_dailynews(d):
     return _fetch_frontpages('daily-news', 'dailynews', d)
 
 
+def download_nytimes(d):
+    return _fetch_frontpages('the-new-york-times', 'nytimes', d)
+
+
+def download_washpost(d):
+    return _fetch_frontpages('the-washington-post', 'washpost', d)
+
+
+def download_boston_globe(d):
+    return _fetch_freedomforum('MA_BG', 'boston-globe', d)
+
+
+def download_miami_herald(d):
+    return _fetch_freedomforum('FL_MH', 'miami-herald', d)
+
+
 def download_newsday(d):
     d = d or datetime.date.today()
     return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', 'newsday')

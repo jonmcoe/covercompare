@@ -1,4 +1,5 @@
 papers:
+  # NY papers
   nypost:
     name: "NY Post"
     fetcher: nypost
@@ -9,6 +10,22 @@ papers:
   dailynews:
     name: "NY Daily News"
     fetcher: dailynews
+
+  # National papers — frontpages.com (1200px)
+  nytimes:
+    name: "NY Times"
+    fetcher: nytimes
+  washpost:
+    name: "Washington Post"
+    fetcher: washpost
+
+  # National papers — freedomforum CDN (700px)
+  boston-globe:
+    name: "Boston Globe"
+    fetcher: boston-globe
+  miami-herald:
+    name: "Miami Herald"
+    fetcher: miami-herald
 
 default: [newsday, nypost]
 
