@@ -8,17 +8,21 @@ A bot that fetches New York newspaper front pages, combines them side-by-side, a
 |---|---|---|
 | `nypost` | NY Post | Direct CDN at `nypost.com/wp-content/uploads/...` |
 | `newsday` | Newsday | CloudFront CDN at `d2dr22b2lm4tvw.cloudfront.net/ny_nd/...` |
-| `dailynews` | NY Daily News | Scraped from `frontpages.com/daily-news/` (thumbnail-quality) |
+| `dailynews` | NY Daily News | `frontpages.com` (1200px) |
+| `nytimes` | NY Times | `frontpages.com` (1200px), `freedomforum` fallback |
+| `washpost` | Washington Post | `frontpages.com` (1200px), `freedomforum` fallback |
+| `boston-globe` | Boston Globe | `freedomforum` (700px), `frontpages.com` fallback |
+| `miami-herald` | Miami Herald | `freedomforum` (700px), `frontpages.com` fallback |
+
+Papers with multiple sources try them in order — first success wins. See `papers.yaml` and `CLAUDE.md` for adding more.
 
 ## Setup
-
-### Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Requires Python 3 and: `pillow`, `requests`, `beautifulsoup4`, `pyyaml`, `tweepy`
+Requires Python 3 and: `pillow`, `requests`, `pyyaml`
 
 ### Environment variables
 
@@ -28,20 +32,18 @@ Requires Python 3 and: `pillow`, `requests`, `beautifulsoup4`, `pyyaml`, `tweepy
 
 ## Usage
 
-### Post today's covers
-
 ```bash
 python post_today.py                           # default papers (newsday + nypost)
 python post_today.py 2025-11-15                # specific date
-python post_today.py --config new_york         # named config (all 3 NY papers)
+python post_today.py --config new_york         # all 3 NY papers left-to-right
 python post_today.py --papers nypost dailynews # explicit paper list
 ```
 
-Named configs are defined in `papers.yaml`. The `new_york` config runs all three papers left-to-right by political lean: Daily News → Newsday → NY Post.
+Named configs are defined in `papers.yaml`. The `new_york` config runs Daily News → Newsday → NY Post (left-to-right by political lean).
 
-Generated images are saved to `generated_images/YYYY-MM-DD-{label}.jpg` where label is the config name, hyphenated paper list, or `combined` for the default.
+Generated images are saved to `generated_images/YYYY-MM-DD-{label}.jpg`.
 
-### Post a flashback
+### Flashback
 
 Re-posts a previously generated image from `generated_images/`:
 
