@@ -6,6 +6,7 @@ MAX_ATTEMPTS=4
 RETRY_INTERVAL=3600  # seconds
 
 cd "$SCRIPT_DIR"
+source .env
 
 for attempt in $(seq 1 $MAX_ATTEMPTS); do
     echo "[$(date -u +"%Y-%m-%dT%H:%M:%SZ")] Attempt $attempt of $MAX_ATTEMPTS"
