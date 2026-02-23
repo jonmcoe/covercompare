@@ -46,6 +46,14 @@ papers:
       - source: kiosko
         slug: wsj                        # 750px; page date used (WSJ skips Sundays)
 
+  # National papers — frontpages only
+  usatoday:
+    name: "USA Today"
+    format: broadsheet
+    sources:
+      - source: frontpages
+        slug: usa-today
+
   # National papers — freedomforum primary, frontpages fallback
   boston-globe:
     name: "Boston Globe"
