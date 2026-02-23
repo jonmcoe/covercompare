@@ -43,61 +43,59 @@ def _fetch_freedomforum(code, papername, d):
     Feb 2026 but may still work for others.
 
     Find a paper's code at https://www.freedomforum.org/todaysfrontpages/
-    e.g. 'NY_DN' (Daily News), 'NY_NWS' (Newsday)
+    e.g. 'NY_DN' (Daily News), 'MA_BG' (Boston Globe)
     """
     d = d or datetime.date.today()
     url = f'https://cdn.freedomforum.org/dfp/jpg{d.day}/lg/{code}.jpg'
     return _save_image(url, papername)
 
 
-# def download_nypost(d):
+def _fetch_nypost_direct(papername, d):
+    """NY Post direct CDN — constructs URL from date parts."""
+    today = d or datetime.date.today()
+    template = "https://nypost.com/wp-content/uploads/sites/2/{0}/{1}/{2}.P1_LCF.jpg?resize=1393,1536&quality=90&strip=all"
+    url = template.format(
+        today.strftime('%Y'),
+        today.strftime('%m'),
+        today.strftime('%B').upper() + today.strftime('%d'),
+    )
+    print(url)
+    return _save_image(url, papername)
+
+
+def _fetch_newsday_cloudfront(papername, d):
+    """Newsday CloudFront CDN — direct by date."""
+    d = d or datetime.date.today()
+    return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername)
+
+
+# def _fetch_nypost_scrape(papername, d):
 #     today = d or datetime.date.today()
 #     today_string = today.strftime('%B-%d-%Y').lower().replace('-0', '-')
 #     page_html = requests.get(f'https://nypost.com/cover/{today_string}/').content
 #     soup = bs4.BeautifulSoup(page_html, features="html.parser")
 #     image_element = soup.find('img', attrs={'class': 'cover-swap__image cover-swap__image--front'})
 #     image_url = image_element.attrs['srcset'].split('?')[0]
-#     return _save_image(image_url, 'nypost')
+#     return _save_image(image_url, papername)
 
 
-def download_nypost_direct(d):
-    today = d or datetime.date.today()
-    template = "https://nypost.com/wp-content/uploads/sites/2/{0}/{1}/{2}.P1_LCF.jpg?resize=1393,1536&quality=90&strip=all"
-    year = today.strftime('%Y')
-    month_num = today.strftime('%m')
-    capmonth_with_daynum = today.strftime('%B').upper() + today.strftime('%d')
-    url = template.format(year, month_num, capmonth_with_daynum)
-    print(url)
-    return _save_image(url, 'nypost')
-
-
-def download_dailynews(d):
-    return _fetch_frontpages('daily-news', 'dailynews', d)
-
-
-def download_nytimes(d):
-    return _fetch_frontpages('the-new-york-times', 'nytimes', d)
-
-
-def download_washpost(d):
-    return _fetch_frontpages('the-washington-post', 'washpost', d)
-
-
-def download_boston_globe(d):
-    return _fetch_freedomforum('MA_BG', 'boston-globe', d)
-
-
-def download_miami_herald(d):
-    return _fetch_freedomforum('FL_MH', 'miami-herald', d)
-
-
-def download_newsday(d):
-    d = d or datetime.date.today()
-    return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', 'newsday')
+def fetch_paper(cfg, papername, d):
+    """Dispatch to the appropriate fetcher based on papers.yaml config."""
+    source = cfg['source']
+    if source == 'frontpages':
+        return _fetch_frontpages(cfg['slug'], papername, d)
+    elif source == 'freedomforum':
+        return _fetch_freedomforum(cfg['code'], papername, d)
+    elif source == 'nypost_direct':
+        return _fetch_nypost_direct(papername, d)
+    elif source == 'newsday_cloudfront':
+        return _fetch_newsday_cloudfront(papername, d)
+    else:
+        raise ValueError(f'Unknown source: {source}')
 
 
 if __name__ == '__main__':
     d = datetime.date.today()
-    download_nypost_direct(d)
-    download_dailynews(d)
-    download_newsday(d)
+    _fetch_nypost_direct('nypost', d)
+    _fetch_frontpages('daily-news', 'dailynews', d)
+    _fetch_newsday_cloudfront('newsday', d)

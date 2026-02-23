@@ -2,30 +2,35 @@ papers:
   # NY papers
   nypost:
     name: "NY Post"
-    fetcher: nypost
+    source: nypost_direct
   newsday:
     name: "Newsday"
-    fetcher: newsday
+    source: newsday_cloudfront
     trim_whitespace: true
   dailynews:
     name: "NY Daily News"
-    fetcher: dailynews
+    source: frontpages
+    slug: daily-news
 
   # National papers — frontpages.com (1200px)
   nytimes:
     name: "NY Times"
-    fetcher: nytimes
+    source: frontpages
+    slug: the-new-york-times
   washpost:
     name: "Washington Post"
-    fetcher: washpost
+    source: frontpages
+    slug: the-washington-post
 
   # National papers — freedomforum CDN (700px)
   boston-globe:
     name: "Boston Globe"
-    fetcher: boston-globe
+    source: freedomforum
+    code: MA_BG
   miami-herald:
     name: "Miami Herald"
-    fetcher: miami-herald
+    source: freedomforum
+    code: FL_MH
 
 default: [newsday, nypost]
 

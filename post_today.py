@@ -7,15 +7,6 @@ import combine
 import discord
 import fetch
 
-FETCHERS = {
-    'nypost': fetch.download_nypost_direct,
-    'newsday': fetch.download_newsday,
-    'dailynews': fetch.download_dailynews,
-    'nytimes': fetch.download_nytimes,
-    'washpost': fetch.download_washpost,
-    'boston-globe': fetch.download_boston_globe,
-    'miami-herald': fetch.download_miami_herald,
-}
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -43,7 +34,7 @@ if __name__ == '__main__':
     trim_flags = []
     for key in paper_keys:
         paper_cfg = config['papers'][key]
-        path = FETCHERS[paper_cfg['fetcher']](dt)
+        path = fetch.fetch_paper(paper_cfg, key, dt)
         paths.append(path)
         trim_flags.append(paper_cfg.get('trim_whitespace', False))
 
