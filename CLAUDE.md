@@ -69,7 +69,3 @@ Both directories are auto-created on first run and fully gitignored.
 
 - `downloads/` — individual fetched covers, named `YYYY-MM-DD-papername.ext`
 - `generated_images/` — combined output, named `YYYY-MM-DD-{label}.jpg`
-
-## Legacy
-
-- `tweet.py` and `credentials.py` — old Twitter/X posting path, not used in current flow

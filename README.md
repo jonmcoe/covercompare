@@ -59,4 +59,3 @@ python flashback.py 2023-04-01
 | `combine.py` | Tiles N images side-by-side with optional whitespace trimming |
 | `discord.py` | Posts image to Discord via webhook |
 | `flashback.py` | Re-posts a historical combined image |
-| `tweet.py` | Legacy Twitter posting (not used) |
