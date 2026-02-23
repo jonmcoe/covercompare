@@ -1,14 +1,28 @@
+import argparse
 import datetime
-import sys
+
+import yaml
 
 import discord
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        dt = datetime.date.fromisoformat(sys.argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('date')
+    parser.add_argument('--papers', nargs='+', default=None)
+    parser.add_argument('--config', default=None)
+    args = parser.parse_args()
+
+    dt = datetime.date.fromisoformat(args.date)
+
+    if args.papers:
+        run_label = '-'.join(args.papers)
+    elif args.config:
+        with open('papers.yaml') as f:
+            config = yaml.safe_load(f)
+        run_label = args.config
     else:
-        print("need date positional arg")
-        exit()
-    expected_file = f"./generated_images/{dt.isoformat()}-combined.jpg"
-    status = discord.post(expected_file, dt, extra_text="FLASHBACK: ")
+        run_label = 'combined'
+
+    path = f'./generated_images/{dt.isoformat()}-{run_label}.jpg'
+    status = discord.post(path, dt, extra_text="FLASHBACK: ")
     print(status.text)
