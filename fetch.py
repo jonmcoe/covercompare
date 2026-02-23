@@ -79,19 +79,34 @@ def _fetch_newsday_cloudfront(papername, d):
 #     return _save_image(image_url, papername)
 
 
-def fetch_paper(cfg, papername, d):
-    """Dispatch to the appropriate fetcher based on papers.yaml config."""
-    source = cfg['source']
+def _fetch_source(source_cfg, papername, d):
+    """Dispatch a single source config entry to the appropriate fetcher."""
+    source = source_cfg['source']
     if source == 'frontpages':
-        return _fetch_frontpages(cfg['slug'], papername, d)
+        return _fetch_frontpages(source_cfg['slug'], papername, d)
     elif source == 'freedomforum':
-        return _fetch_freedomforum(cfg['code'], papername, d)
+        return _fetch_freedomforum(source_cfg['code'], papername, d)
     elif source == 'nypost_direct':
         return _fetch_nypost_direct(papername, d)
     elif source == 'newsday_cloudfront':
         return _fetch_newsday_cloudfront(papername, d)
     else:
         raise ValueError(f'Unknown source: {source}')
+
+
+def fetch_paper(cfg, papername, d):
+    """Try each source in order, returning the first success.
+
+    Raises RuntimeError only if all sources fail.
+    """
+    errors = []
+    for source_cfg in cfg['sources']:
+        try:
+            return _fetch_source(source_cfg, papername, d)
+        except Exception as e:
+            print(f'[{papername}] {source_cfg["source"]} failed: {e}, trying next source')
+            errors.append(f'{source_cfg["source"]}: {e}')
+    raise RuntimeError(f'All sources failed for {papername}: {"; ".join(errors)}')
 
 
 if __name__ == '__main__':

@@ -2,35 +2,52 @@ papers:
   # NY papers
   nypost:
     name: "NY Post"
-    source: nypost_direct
+    sources:
+      - source: nypost_direct
   newsday:
     name: "Newsday"
-    source: newsday_cloudfront
     trim_whitespace: true
+    sources:
+      - source: newsday_cloudfront       # ~1542px, best quality
+      - source: freedomforum
+        code: NY_ND                      # 700px fallback
   dailynews:
     name: "NY Daily News"
-    source: frontpages
-    slug: daily-news
+    sources:
+      - source: frontpages
+        slug: daily-news
 
-  # National papers — frontpages.com (1200px)
+  # National papers — frontpages primary (1200px), freedomforum fallback (700px)
   nytimes:
     name: "NY Times"
-    source: frontpages
-    slug: the-new-york-times
+    sources:
+      - source: frontpages
+        slug: the-new-york-times
+      - source: freedomforum
+        code: NY_NYT
   washpost:
     name: "Washington Post"
-    source: frontpages
-    slug: the-washington-post
+    sources:
+      - source: frontpages
+        slug: the-washington-post
+      - source: freedomforum
+        code: DC_WP
 
-  # National papers — freedomforum CDN (700px)
+  # National papers — freedomforum primary, frontpages fallback
   boston-globe:
     name: "Boston Globe"
-    source: freedomforum
-    code: MA_BG
+    sources:
+      - source: freedomforum
+        code: MA_BG
+      - source: frontpages
+        slug: the-boston-globe
   miami-herald:
     name: "Miami Herald"
-    source: freedomforum
-    code: FL_MH
+    sources:
+      - source: freedomforum
+        code: FL_MH                      # note: sometimes stale on weekends
+      - source: frontpages
+        slug: miami-herald
 
 default: [newsday, nypost]
 
