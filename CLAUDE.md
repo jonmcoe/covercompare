@@ -35,18 +35,22 @@ Defines paper fetcher mappings and named run configs. The `new_york` config runs
 
 ## Adding a new paper
 
-Two generic fetchers are available in `fetch.py`:
+Two generic fetchers are available in `fetch.py`. To add a paper, only `papers.yaml` needs to change (no Python edits needed for either generic source).
 
-**`_fetch_frontpages(slug, papername, d)`** — scrapes frontpages.com full-res image (1200px wide) via base64-obfuscated inline script. Higher quality, more papers available.
-- Browse index: https://www.frontpages.com/ — click any paper, the URL slug is e.g. `the-new-york-times`
+**`frontpages` source** — 1200px wide WebP, ~33 US dailies, scraped via base64-obfuscated inline script
+- Browse index: https://www.frontpages.com/ — click any paper, the URL slug is the path component e.g. `the-new-york-times`
 - Note: og:image/JSON-LD on these pages contains a *truncated* slug that 404s; the real one is only in the script tag
+- Updates ~01:00–06:00 ET for major papers; `dateModified` in JSON-LD is in CET (shifts to CEST after late March European DST)
+- Newsday edge case: frontpages labels Newsday's edition with the *next* calendar day
 
-**`_fetch_freedomforum(code, papername, d)`** — hits freedomforum.org CDN directly (700px wide). Patchier coverage but no scraping needed.
-- Browse index: https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N
-- Code format is `STATE_ABBREV` e.g. `NY_DN`, `MA_BG`, `DC_WP`
-- Broken for Daily News as of Feb 2026; test before relying on it
+**`freedomforum` source** — 700px wide JPEG, ~19+ US dailies confirmed, direct CDN URL (no scraping)
+- Browse index: https://www.freedomforum.org/todaysfrontpages/?tfp_display=gallery&tfp_region=USA&tfp_sort_by=state&tfp_state_letter=N (note: the website itself rate-limits bots but the CDN does not)
+- Code format is `STATE_ABBREV` e.g. `MA_BG`, `DC_WP`, `NY_NYT`; day-of-month in URL is not zero-padded
+- `Last-Modified` header on CDN responses gives reliable staleness check
+- NY Post and NY Daily News are not available here; use frontpages for those
+- Some papers have stale images on weekends — verify with a HEAD request before relying on it
 
-To add a paper: add a function in `fetch.py`, register it in `FETCHERS` in `post_today.py`, add an entry in `papers.yaml`.
+**Choosing between them for a paper on both**: prefer frontpages for resolution; prefer freedomforum for stability (no scraping dependency). If frontpages changes its obfuscation scheme it will break all frontpages fetches simultaneously.
 
 ## Directory conventions
 
