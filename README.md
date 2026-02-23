@@ -9,6 +9,7 @@ A bot that fetches New York newspaper front pages, combines them side-by-side, a
 | `nypost` | NY Post | Direct CDN at `nypost.com/wp-content/uploads/...` |
 | `newsday` | Newsday | CloudFront CDN at `d2dr22b2lm4tvw.cloudfront.net/ny_nd/...` |
 | `dailynews` | NY Daily News | `frontpages.com` (1200px) |
+| `wsj` | Wall Street Journal | `kiosko.net` (750px; skips Sundays) |
 | `nytimes` | NY Times | `frontpages.com` (1200px), `freedomforum` fallback |
 | `washpost` | Washington Post | `frontpages.com` (1200px), `freedomforum` fallback |
 | `boston-globe` | Boston Globe | `freedomforum` (700px), `frontpages.com` fallback |

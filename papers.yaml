@@ -17,6 +17,13 @@ papers:
       - source: frontpages
         slug: daily-news
 
+  # National papers — kiosko (750px, good for papers not on frontpages/freedomforum)
+  wsj:
+    name: "Wall Street Journal"
+    sources:
+      - source: kiosko
+        slug: wsj                        # 750px; page date used (WSJ skips Sundays)
+
   # National papers — frontpages primary (1200px), freedomforum fallback (700px)
   nytimes:
     name: "NY Times"

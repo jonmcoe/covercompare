@@ -50,6 +50,27 @@ def _fetch_freedomforum(code, papername, d):
     return _save_image(url, papername)
 
 
+def _fetch_kiosko(slug, papername, d):
+    """Fetch cover from kiosko.net by paper slug (750px JPEG).
+
+    Scrapes the date from the page rather than using d directly, since some
+    papers (e.g. WSJ) don't publish every day and the page always reflects
+    the most recent available issue.
+
+    Find a paper's slug at https://www.kiosko.net/us/ — URL is /us/np/{slug}.html
+    e.g. 'wsj', 'nyt', 'usatoday'
+    """
+    r = requests.get(f'https://www.kiosko.net/us/np/{slug}.html', headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+    })
+    m = re.search(r'img\.kiosko\.net/(\d{4}/\d{2}/\d{2})', r.text)
+    if not m:
+        raise RuntimeError(f'Could not find date in kiosko page for {slug}')
+    date_path = m.group(1)
+    url = f'https://img.kiosko.net/{date_path}/us/{slug}.750.jpg'
+    return _save_image(url, papername)
+
+
 def _fetch_nypost_direct(papername, d):
     """NY Post direct CDN — constructs URL from date parts."""
     today = d or datetime.date.today()
@@ -86,6 +107,8 @@ def _fetch_source(source_cfg, papername, d):
         return _fetch_frontpages(source_cfg['slug'], papername, d)
     elif source == 'freedomforum':
         return _fetch_freedomforum(source_cfg['code'], papername, d)
+    elif source == 'kiosko':
+        return _fetch_kiosko(source_cfg['slug'], papername, d)
     elif source == 'nypost_direct':
         return _fetch_nypost_direct(papername, d)
     elif source == 'newsday_cloudfront':

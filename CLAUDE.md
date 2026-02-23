@@ -61,7 +61,22 @@ my-paper:
 - NY Post and NY Daily News are not on freedomforum; use frontpages for those
 - **Weekend staleness risk**: some papers (Miami Herald, Star Tribune, Arizona Republic) have been observed returning the previous day's image on weekends with a 200 response — no error raised, just silently stale content
 
-**Choosing between them for a paper on both**: prefer frontpages for resolution; prefer freedomforum for stability (no scraping dependency). If frontpages changes its obfuscation scheme it will break all frontpages fetches at once.
+**`kiosko` source** — 750px wide JPEG, good for papers not on frontpages/freedomforum (e.g. WSJ)
+- Browse index: https://www.kiosko.net/us/ — URL slug is from `/us/np/{slug}.html`
+- Date is scraped from the page rather than passed as a parameter — always reflects the most recent available issue, handling publication gaps (e.g. WSJ skips Sundays) automatically
+- **Historical dates**: supported via direct URL (`img.kiosko.net/YYYY/MM/DD/us/{slug}.750.jpg`) but `_fetch_kiosko` ignores the `d` parameter and always fetches the latest
+
+**Historical date support by source** (relevant for flashback runs and `post_today.py YYYY-MM-DD`):
+
+| Source | Historical dates? | Notes |
+|---|---|---|
+| `nypost_direct` | Yes | Full date in CDN URL |
+| `newsday_cloudfront` | Yes | Full ISO date in CDN URL |
+| `kiosko` | No — always latest | Scrapes page date; ignores `d` |
+| `frontpages` | No — always latest | Scrapes live page; ignores `d` |
+| `freedomforum` | No — today only | URL uses day-of-month only, no year/month |
+
+**Choosing between sources for a paper on multiple**: prefer frontpages for resolution; prefer freedomforum for stability (no scraping). If frontpages changes its obfuscation scheme it will break all frontpages fetches at once.
 
 ## Directory conventions
 
