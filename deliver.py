@@ -81,7 +81,7 @@ def deliver_subscription(sub, cfg, today):
 
     try:
         combine.combine(paths, combined_path, trim_flags)
-        resp = discord.post(combined_path, today, webhook_url=sub['webhook_url'])
+        resp = discord.post(combined_path, today, webhook_url=sub['webhook_url'], username=sub['label'] or None)
         if not (200 <= resp.status_code < 300):
             raise RuntimeError(f'Discord returned HTTP {resp.status_code}: {resp.text[:200]}')
         db.record_success(sub_id, today)
