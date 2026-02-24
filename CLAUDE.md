@@ -29,8 +29,6 @@ python flashback.py 2023-04-01
 - **Newsday** (`newsday`): CloudFront CDN at `d2dr22b2lm4tvw.cloudfront.net/ny_nd/...`; has extra whitespace, trimmed automatically
 - **NY Daily News** (`dailynews`): scraped from `frontpages.com/daily-news/` via base64-obfuscated script tag
 
-**Potential future source — PressReader** (`pressreader.com`): hosts digital editions of many papers (e.g. `nypost.pressreader.com`, likely others). Not yet implemented; worth exploring as an additional fallback source.
-
 ## papers.yaml
 
 Defines paper sources and named run configs. The `new_york` config runs all three papers ordered left-to-right by political lean.
