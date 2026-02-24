@@ -1,9 +1,11 @@
-"""deliver.py — daily cron script to post combined covers to all active subscriptions.
+"""deliver.py — post combined covers to all active subscriptions not yet delivered today.
 
-Runs after prefetch.py so downloads/ is already warm.
+Safe to run multiple times per day — skips subscriptions already successfully
+delivered today. Run hourly during the morning delivery window so transient
+failures (paper not yet available) are retried automatically.
 
-Crontab:
-    0 7 * * * /path/to/env/bin/python /path/to/deliver.py >> /var/log/deliver.log 2>&1
+Crontab (runs hourly 11:00–14:00 UTC = 7:00–10:00 AM ET):
+    0 11-14 * * * /path/to/env/bin/python /path/to/deliver.py >> /path/to/deliver.log 2>&1
 """
 
 import datetime
@@ -52,6 +54,14 @@ def _fetch_papers(paper_keys, cfg, d):
     return paths, trim_flags
 
 
+def _already_delivered(sub, today):
+    """Return True if this subscription was successfully delivered today."""
+    last = sub.get('last_posted_at')
+    if not last:
+        return False
+    return last.startswith(today.isoformat())
+
+
 def deliver_subscription(sub, cfg, today):
     sub_id = sub['id']
     papers = json.loads(sub['papers'])
@@ -85,7 +95,10 @@ def main():
     subs = db.get_active_subscriptions()
     print(f'{len(subs)} active subscription(s)')
 
-    for sub in subs:
+    pending = [s for s in subs if not _already_delivered(s, today)]
+    print(f'{len(pending)} pending, {len(subs) - len(pending)} already delivered today')
+
+    for sub in pending:
         deliver_subscription(sub, cfg, today)
 
     print('deliver.py done')
