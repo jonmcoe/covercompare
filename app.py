@@ -179,7 +179,7 @@ def create_subscription():
         combined_path = os.path.join(_GENERATED_DIR, f'{today.isoformat()}-test-{uuid.uuid4().hex[:8]}.jpg')
         os.makedirs(_GENERATED_DIR, exist_ok=True)
         combine.combine(paths, combined_path, trim_flags)
-        resp = discord.post(combined_path, today, webhook_url=webhook_url)
+        resp = discord.post(combined_path, today, webhook_url=webhook_url, username=label or None)
         if not (200 <= resp.status_code < 300):
             return jsonify({'error': f'Test delivery failed: HTTP {resp.status_code}'}), 400
         # Clean up temp combined file
@@ -233,7 +233,7 @@ def preview_subscription(sub_id):
         combined_path = os.path.join(_GENERATED_DIR, f'{today.isoformat()}-preview-{sub_id}.jpg')
         os.makedirs(_GENERATED_DIR, exist_ok=True)
         combine.combine(paths, combined_path, trim_flags)
-        resp = discord.post(combined_path, today, webhook_url=sub['webhook_url'])
+        resp = discord.post(combined_path, today, webhook_url=sub['webhook_url'], username=sub['label'] or None)
         db.record_success(sub_id, today)
         return jsonify({'status': 'delivered', 'discord_status': resp.status_code})
     except Exception as e:
