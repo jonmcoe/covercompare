@@ -38,7 +38,7 @@ def _cached_paper_path(papername, d):
     return matches[0] if matches else None
 
 
-def _fetch_papers(paper_keys, cfg, d):
+def _fetch_papers(sub_id, paper_keys, cfg, d):
     paths = []
     trim_flags = []
     for key in paper_keys:
@@ -47,7 +47,7 @@ def _fetch_papers(paper_keys, cfg, d):
         if cached:
             path = cached
         else:
-            print(f'  [{key}] cache miss, fetching...')
+            print(f'[sub {sub_id}/{key}] cache miss, fetching...')
             path = fetch.fetch_paper(paper_cfg, key, d)
         paths.append(path)
         trim_flags.append(paper_cfg.get('trim_whitespace', False))
@@ -65,15 +65,21 @@ def _already_delivered(sub, today):
 def deliver_subscription(sub, cfg, today):
     sub_id = sub['id']
     papers = json.loads(sub['papers'])
-    label = sub['label'] or '-'.join(sorted(papers))
 
-    print(f'[sub {sub_id}] delivering {papers} to webhook ...')
+    print(f'[sub {sub_id}] delivering {papers}')
 
     combined_path = os.path.join(GENERATED_DIR, f'{today.isoformat()}-sub{sub_id}.jpg')
     os.makedirs(GENERATED_DIR, exist_ok=True)
 
     try:
-        paths, trim_flags = _fetch_papers(papers, cfg, today)
+        paths, trim_flags = _fetch_papers(sub_id, papers, cfg, today)
+    except Exception as e:
+        error_msg = str(e)
+        db.record_error(sub_id, error_msg)
+        print(f'[sub {sub_id}] FAILED (fetch): {error_msg}', file=sys.stderr)
+        return
+
+    try:
         combine.combine(paths, combined_path, trim_flags)
         resp = discord.post(combined_path, today, webhook_url=sub['webhook_url'])
         if not (200 <= resp.status_code < 300):
@@ -83,7 +89,7 @@ def deliver_subscription(sub, cfg, today):
     except Exception as e:
         error_msg = str(e)
         db.record_error(sub_id, error_msg)
-        print(f'[sub {sub_id}] FAILED: {error_msg}', file=sys.stderr)
+        print(f'[sub {sub_id}] FAILED (post): {error_msg}', file=sys.stderr)
 
 
 def main():
