@@ -35,17 +35,31 @@ def init():
         conn.executescript(SCHEMA)
 
 
-def create_subscription(webhook_url, papers, label, ip_address):
+def create_or_update_subscription(webhook_url, papers, label, ip_address):
+    """Insert a new subscription, or update papers/label if one already exists for this webhook."""
     now = datetime.datetime.utcnow().isoformat()
     papers_json = json.dumps(papers)
     with _connect() as conn:
-        cur = conn.execute(
-            """INSERT INTO subscriptions
-               (webhook_url, papers, label, ip_address, created_at)
-               VALUES (?, ?, ?, ?, ?)""",
-            (webhook_url, papers_json, label, ip_address, now),
-        )
-        sub_id = cur.lastrowid
+        existing = conn.execute(
+            'SELECT id FROM subscriptions WHERE webhook_url = ? AND active = 1',
+            (webhook_url,),
+        ).fetchone()
+        if existing:
+            conn.execute(
+                """UPDATE subscriptions
+                   SET papers = ?, label = ?, consecutive_errors = 0, last_error = NULL
+                   WHERE id = ?""",
+                (papers_json, label, existing['id']),
+            )
+            sub_id = existing['id']
+        else:
+            cur = conn.execute(
+                """INSERT INTO subscriptions
+                   (webhook_url, papers, label, ip_address, created_at)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (webhook_url, papers_json, label, ip_address, now),
+            )
+            sub_id = cur.lastrowid
     return get_subscription(sub_id)
 
 

@@ -185,7 +185,7 @@ def create_subscription():
     except Exception as e:
         return jsonify({'error': f'Test delivery error: {e}'}), 400
 
-    sub = db.create_subscription(
+    sub = db.create_or_update_subscription(
         webhook_url=webhook_url,
         papers=papers,
         label=label,
