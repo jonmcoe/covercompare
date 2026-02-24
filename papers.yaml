@@ -158,14 +158,6 @@ papers:
       - source: frontpages
         slug: fort-worth-star-telegram
 
-  # --- Mountain West ---
-  denver-post:
-    name: "Denver Post"
-    format: broadsheet
-    sources:
-      - source: freedomforum
-        code: CO_DH                       # confirmed fresh 2026-02-22; may upload later in day (MT time)
-
   # --- West Coast ---
   latimes:
     name: "LA Times"
