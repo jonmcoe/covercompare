@@ -68,6 +68,7 @@ WorkingDirectory=/srv/covercompare
 EnvironmentFile=/srv/covercompare/.env
 ExecStart=/srv/covercompare/env/bin/gunicorn app:app \
     --workers 1 \
+    --worker-class gevent \
     --bind 127.0.0.1:5000 \
     --access-logfile /var/log/covercompare-access.log \
     --error-logfile /var/log/covercompare-error.log
@@ -80,8 +81,8 @@ WantedBy=multi-user.target
 
 > **Why 1 worker?** The rate limiter uses an in-process dict. Multiple workers
 > each have their own bucket, so `-w 4` would effectively 4× the rate limit.
-> A single gevent worker handles concurrent I/O fine if you want more throughput:
-> `pip install gevent` and add `--worker-class gevent`.
+> The gevent worker class handles concurrent I/O within that single process,
+> so multiple simultaneous image fetches don't block each other.
 
 ```bash
 sudo systemctl daemon-reload
