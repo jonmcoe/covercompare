@@ -5,17 +5,33 @@ import re
 import requests
 
 
-def _save_image(url, papername):
+def _save_image(url, papername, date=None):
     os.makedirs('./downloads', exist_ok=True)
     image_res = requests.get(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
     image_res.raise_for_status()
     ext = os.path.splitext(url.split('?')[0])[1] or '.jpg'
-    path = f'./downloads/{datetime.date.today().isoformat()}-{papername}{ext}'
+    if date is None:
+        date = datetime.date.today()
+    path = f'./downloads/{date.isoformat()}-{papername}{ext}'
     with open(path, 'wb') as f:
         f.write(image_res.content)
     return path
+
+
+def _parse_frontpages_date(html):
+    """Extract the actual paper date from frontpages.com JSON-LD dateModified.
+
+    dateModified is in CET/CEST (Europe/Paris). We take the date portion
+    directly — it reflects the European calendar date at time of update, which
+    matches the edition date for US papers published that morning.
+    Returns a datetime.date, or None if not found.
+    """
+    m = re.search(r'"dateModified"\s*:\s*"(\d{4}-\d{2}-\d{2})', html)
+    if m:
+        return datetime.date.fromisoformat(m.group(1))
+    return None
 
 
 def _fetch_frontpages(slug, papername, d):
@@ -25,16 +41,20 @@ def _fetch_frontpages(slug, papername, d):
     inline script to foil naive scrapers. The slug in og:image/JSON-LD is
     truncated and 404s; this extracts the real one.
 
+    The image is saved under the actual paper date from dateModified, not the
+    requested date, to avoid cache poisoning when frontpages hasn't updated yet.
+
     Find a paper's slug at https://www.frontpages.com/<slug>/
     e.g. 'daily-news', 'new-york-post', 'newsday'
     """
     r = requests.get(f'https://www.frontpages.com/{slug}/', headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
+    actual_date = _parse_frontpages_date(r.text) or (d or datetime.date.today())
     m = re.search(r"atob\('([A-Za-z0-9+/=]+)'\)", r.text)
     path = base64.b64decode(m.group(1)).decode('utf-8')
     full_url = 'https://www.frontpages.com' + path
-    return _save_image(full_url, papername)
+    return _save_image(full_url, papername, date=actual_date)
 
 
 def _fetch_freedomforum(code, papername, d):
