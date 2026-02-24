@@ -78,7 +78,10 @@ function makePresetBtn(label, id, keys) {
   btn.className = 'preset-btn';
   btn.dataset.presetId = id;
   btn.textContent = label;
-  btn.addEventListener('click', () => setSelectedPapers(keys, id));
+  btn.addEventListener('click', () => {
+    gtag('event', 'preset_click', { preset: id });
+    setSelectedPapers(keys, id);
+  });
   return btn;
 }
 
@@ -339,6 +342,7 @@ function bindSubscribeForm() {
         return;
       }
 
+      gtag('event', 'subscribe', { paper_count: papers.length });
       document.getElementById('token-result').style.display = 'block';
       msg.textContent = 'Subscribed! Test image delivered to your Discord.';
       msg.className = 'ok';
@@ -377,6 +381,7 @@ function bindUnsubscribeForm() {
         headers: { 'X-Webhook-Url': token },
       });
       if (res.status === 204) {
+        gtag('event', 'unsubscribe');
         msg.textContent = 'Unsubscribed successfully.';
         msg.className = 'ok';
       } else if (res.status === 403) {
@@ -471,6 +476,7 @@ function bindSubToggle() {
   toggle.addEventListener('click', () => {
     const open = toggle.classList.toggle('open');
     content.style.display = open ? 'block' : 'none';
+    if (open) gtag('event', 'delivery_expand');
   });
 }
 
