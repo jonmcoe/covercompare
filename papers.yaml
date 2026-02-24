@@ -75,6 +75,12 @@ papers:
         code: PA_PI
 
   # --- Southeast ---
+  charlotte-observer:
+    name: "Charlotte Observer"
+    format: broadsheet
+    sources:
+      - source: frontpages
+        slug: the-charlotte-observer
   miami-herald:
     name: "Miami Herald"
     format: broadsheet
@@ -91,6 +97,30 @@ papers:
         code: GA_AJC
 
   # --- Midwest ---
+  star-tribune:
+    name: "Star Tribune"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: MN_ST                       # note: stale on weekends
+      - source: frontpages
+        slug: star-tribune
+  kansas-city-star:
+    name: "Kansas City Star"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: MO_KCS
+      - source: frontpages
+        slug: the-kansas-city-star
+  milwaukee-journal-sentinel:
+    name: "Milwaukee Journal Sentinel"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: WI_MJS
+      - source: frontpages
+        slug: milwaukee-journal-sentinel
   chicago-tribune:
     name: "Chicago Tribune"
     format: broadsheet
@@ -121,6 +151,12 @@ papers:
     sources:
       - source: freedomforum
         code: TX_HC
+  fort-worth-star-telegram:
+    name: "Fort Worth Star-Telegram"
+    format: broadsheet
+    sources:
+      - source: frontpages
+        slug: fort-worth-star-telegram
 
   # --- Mountain West ---
   denver-post:
@@ -153,6 +189,22 @@ papers:
     sources:
       - source: freedomforum
         code: WA_ST
+  mercury-news:
+    name: "Mercury News"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: CA_MN
+      - source: frontpages
+        slug: the-mercury-news
+  sacramento-bee:
+    name: "Sacramento Bee"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: CA_SB
+      - source: frontpages
+        slug: the-sacramento-bee
 
 default: [newsday, nypost]
 
