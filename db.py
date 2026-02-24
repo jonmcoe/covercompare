@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     webhook_url       TEXT    NOT NULL,
     papers            TEXT    NOT NULL,
-    label             TEXT,
+    label             TEXT,               -- user-supplied Discord sender name override; poorly named, not worth migrating
     ip_address        TEXT,
     created_at        TEXT    NOT NULL,
     last_posted_at    TEXT,
