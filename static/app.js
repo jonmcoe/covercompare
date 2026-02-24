@@ -49,6 +49,7 @@ function setUrlPapers(keys) {
     ? `?papers=${keys.join(',')}`
     : window.location.pathname;
   history.replaceState(null, '', url);
+  gtag('event', 'page_view', { page_location: window.location.href });
 }
 
 function matchPreset(keys) {
