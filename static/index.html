@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CoverCompare</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -143,6 +144,19 @@
       line-height: 1;
     }
     .chip-remove:hover { opacity: 1; }
+
+    /* About button */
+    #about-btn {
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 4px 2px;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    #about-btn:hover { color: #999; }
 
     /* Main viewer */
     #viewer {
@@ -379,6 +393,52 @@
       border-radius: 4px;
       box-shadow: 0 8px 48px rgba(0,0,0,0.8);
     }
+
+    /* About modal */
+    #about-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.80);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    #about-modal.open { display: flex; }
+    #about-modal-box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 32px 36px;
+      max-width: 480px;
+      width: 90%;
+      position: relative;
+      line-height: 1.6;
+    }
+    #about-modal-box h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+    #about-modal-box p {
+      font-size: 0.88rem;
+      color: #aaa;
+      margin-bottom: 12px;
+    }
+    #about-modal-box p:last-of-type { margin-bottom: 0; }
+    #about-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 1.2rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #about-close:hover { color: #ccc; }
   </style>
 </head>
 <body>
@@ -393,6 +453,7 @@
     </div>
     <div id="selected-chips"></div>
   </div>
+  <button id="about-btn">About</button>
 </header>
 
 <div id="viewer">
@@ -455,6 +516,17 @@
 </div>
 
 <div id="zoom-modal"><img id="zoom-img" alt="" /></div>
+
+<div id="about-modal">
+  <div id="about-modal-box">
+    <button id="about-close">×</button>
+    <h2>CoverCompare</h2>
+    <p>I miss passing a newsstand in the morning and seeing six front pages at once — a quick read of what different editors thought mattered most that day. Which story led. Which photo ran big. What made it above the fold.</p>
+    <p>That experience has mostly disappeared. But the papers are still being printed every morning, and their front pages deserve to be seen.</p>
+    <p>Covers are fetched daily from public sources and are typically available by mid-morning Eastern time.</p>
+  </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

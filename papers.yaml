@@ -1,5 +1,5 @@
 papers:
-  # NY papers
+  # --- New York ---
   nypost:
     name: "NY Post"
     format: tabloid
@@ -20,7 +20,7 @@ papers:
       - source: frontpages
         slug: daily-news
 
-  # National papers — frontpages primary (1200px), freedomforum fallback (700px)
+  # --- National ---
   nytimes:
     name: "NY Times"
     format: broadsheet
@@ -37,16 +37,12 @@ papers:
         slug: the-washington-post
       - source: freedomforum
         code: DC_WP
-
-  # National papers — kiosko (750px)
   wsj:
     name: "Wall Street Journal"
     format: broadsheet
     sources:
       - source: kiosko
         slug: wsj                        # 750px; page date used (WSJ skips Sundays)
-
-  # National papers — frontpages only
   usatoday:
     name: "USA Today"
     format: broadsheet
@@ -54,7 +50,7 @@ papers:
       - source: frontpages
         slug: usa-today
 
-  # National papers — freedomforum primary, frontpages fallback
+  # --- Northeast ---
   boston-globe:
     name: "Boston Globe"
     format: broadsheet
@@ -63,6 +59,26 @@ papers:
         code: MA_BG
       - source: frontpages
         slug: the-boston-globe
+  nj-star-ledger:
+    name: "NJ Star-Ledger"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: NJ_SL
+  philly-inquirer:
+    name: "Philadelphia Inquirer"
+    format: broadsheet
+    sources:
+      - source: frontpages
+        slug: the-philadelphia-inquirer
+  pittsburgh-pg:
+    name: "Pittsburgh Post-Gazette"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: PA_PI
+
+  # --- Southeast ---
   miami-herald:
     name: "Miami Herald"
     format: broadsheet
@@ -71,9 +87,82 @@ papers:
         code: FL_MH                      # note: sometimes stale on weekends
       - source: frontpages
         slug: miami-herald
+  ajc:
+    name: "Atlanta Journal-Constitution"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: GA_AJC
+      - source: frontpages
+        slug: the-atlanta-journal-constitution
+
+  # --- Midwest ---
+  chicago-tribune:
+    name: "Chicago Tribune"
+    format: broadsheet
+    sources:
+      - source: frontpages
+        slug: chicago-tribune
+  chicago-sun:
+    name: "Chicago Sun-Times"
+    format: tabloid
+    sources:
+      - source: freedomforum
+        code: IL_CST
+      - source: frontpages
+        slug: chicago-sun-times
+
+  # --- South / Southwest ---
+  dallas-morning-news:
+    name: "Dallas Morning News"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: TX_DMN
+      - source: frontpages
+        slug: the-dallas-morning-news
+  houston-chronicle:
+    name: "Houston Chronicle"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: TX_HC
+
+  # --- Mountain West ---
+  denver-post:
+    name: "Denver Post"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: CO_DH
+
+  # --- West Coast ---
+  latimes:
+    name: "LA Times"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: CA_LAT
+      - source: frontpages
+        slug: the-los-angeles-times
+  sfchronicle:
+    name: "SF Chronicle"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: CA_SFC
+      - source: frontpages
+        slug: san-francisco-chronicle
+  seattle-times:
+    name: "Seattle Times"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: WA_ST
 
 default: [newsday, nypost]
 
 configs:
   new_york: [dailynews, newsday, nypost]
-  national: [nytimes, usatoday, wsj]
+  national: [nytimes, usatoday, wsj, washpost]
+  west_coast: [latimes, sfchronicle, seattle-times]

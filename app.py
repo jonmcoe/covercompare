@@ -104,7 +104,7 @@ def api_paper(key):
 
     paper_cfg = cfg['papers'][key]
 
-    # Check disk cache first
+    # Check disk cache first; fall back to yesterday if today unavailable
     cached = _cached_paper_path(key, d)
     if cached:
         path = cached
@@ -112,7 +112,10 @@ def api_paper(key):
         try:
             path = fetch.fetch_paper(paper_cfg, key, d)
         except RuntimeError:
-            abort(502)
+            yesterday = d - datetime.timedelta(days=1)
+            path = _cached_paper_path(key, yesterday)
+            if not path:
+                abort(502)
         path = os.path.abspath(path)
 
     if paper_cfg.get('trim_whitespace'):

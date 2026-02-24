@@ -88,8 +88,9 @@ def _fetch_kiosko(slug, papername, d):
     if not m:
         raise RuntimeError(f'Could not find date in kiosko page for {slug}')
     date_path = m.group(1)
+    actual_date = datetime.date.fromisoformat(date_path.replace('/', '-'))
     url = f'https://img.kiosko.net/{date_path}/us/{slug}.750.jpg'
-    return _save_image(url, papername)
+    return _save_image(url, papername, date=actual_date)
 
 
 def _fetch_nypost_direct(papername, d):

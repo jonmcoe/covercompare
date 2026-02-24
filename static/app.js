@@ -22,10 +22,40 @@ async function init() {
   bindSubscribeForm();
   bindUnsubscribeForm();
 
-  // Load national as default
-  const firstConfig = Object.keys(allConfigs)[0];
-  const startKey = allConfigs['national'] ? 'national' : firstConfig;
-  setSelectedPapers(allConfigs[startKey] || [], startKey);
+  // Restore from URL params, or default to national
+  const urlPapers = getUrlPapers();
+  if (urlPapers) {
+    setSelectedPapers(urlPapers, matchPreset(urlPapers));
+  } else {
+    const firstConfig = Object.keys(allConfigs)[0];
+    const startKey = allConfigs['national'] ? 'national' : firstConfig;
+    setSelectedPapers(allConfigs[startKey] || [], startKey);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// URL query param sync
+// ---------------------------------------------------------------------------
+
+function getUrlPapers() {
+  const params = new URLSearchParams(window.location.search);
+  const p = params.get('papers');
+  return p ? p.split(',').filter(Boolean) : null;
+}
+
+function setUrlPapers(keys) {
+  const url = keys.length
+    ? `?papers=${keys.join(',')}`
+    : window.location.pathname;
+  history.replaceState(null, '', url);
+}
+
+function matchPreset(keys) {
+  const joined = keys.slice().sort().join(',');
+  for (const [name, presetKeys] of Object.entries(allConfigs)) {
+    if (presetKeys.slice().sort().join(',') === joined) return name;
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -37,7 +67,7 @@ function buildPresets() {
   container.innerHTML = '';
 
   for (const [name, keys] of Object.entries(allConfigs)) {
-    const label = name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' ');
+    const label = name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     container.appendChild(makePresetBtn(label, name, keys));
   }
 }
@@ -140,6 +170,7 @@ function setSelectedPapers(keys, presetId) {
   setActivePreset(presetId);
   renderViewer();
   updateSubPapersNote();
+  setUrlPapers(selectedPapers);
 }
 
 // ---------------------------------------------------------------------------
@@ -382,6 +413,25 @@ function bindZoomModal() {
 }
 
 // ---------------------------------------------------------------------------
+// About modal
+// ---------------------------------------------------------------------------
+
+function bindAboutModal() {
+  const btn = document.getElementById('about-btn');
+  const modal = document.getElementById('about-modal');
+  const close = document.getElementById('about-close');
+
+  btn.addEventListener('click', () => modal.classList.add('open'));
+  close.addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('open');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') modal.classList.remove('open');
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Discord section toggle
 // ---------------------------------------------------------------------------
 
@@ -401,3 +451,4 @@ function bindSubToggle() {
 init().catch(console.error);
 bindSubToggle();
 bindZoomModal();
+bindAboutModal();
