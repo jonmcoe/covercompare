@@ -5,7 +5,7 @@ delivered today. Run hourly during the morning delivery window so transient
 failures (paper not yet available) are retried automatically.
 
 Crontab (runs hourly 12:00–16:00 UTC = 7:00 AM–12:00 PM ET):
-    0 12-16 * * * /home/ec2-user/covercompare/env/bin/python /home/ec2-user/covercompare/deliver.py >> /home/ec2-user/covercompare/deliver.log 2>&1
+    0 12-16 * * * /path/to/env/bin/python /path/to/deliver.py >> /path/to/deliver.log 2>&1
 """
 
 import datetime

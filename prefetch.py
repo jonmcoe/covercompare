@@ -3,7 +3,7 @@
 Run before deliver.py so webhook deliveries are instant cache hits.
 
 Crontab (11:30 UTC = 6:30 AM ET):
-    30 11 * * * /home/ec2-user/covercompare/env/bin/python /home/ec2-user/covercompare/prefetch.py >> /home/ec2-user/covercompare/prefetch.log 2>&1
+    30 11 * * * /path/to/env/bin/python /path/to/prefetch.py >> /path/to/prefetch.log 2>&1
 """
 
 import datetime
