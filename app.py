@@ -15,6 +15,11 @@ import fetch
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 
+# Trust one level of X-Forwarded-For (set by nginx); prevents IP spoofing
+# for rate limiting. x_proto needed so url_for() generates https:// links.
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

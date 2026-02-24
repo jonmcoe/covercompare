@@ -5,8 +5,11 @@ import re
 import requests
 
 
+_DOWNLOADS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'downloads')
+
+
 def _save_image(url, papername, date=None):
-    os.makedirs('./downloads', exist_ok=True)
+    os.makedirs(_DOWNLOADS_DIR, exist_ok=True)
     image_res = requests.get(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
@@ -14,7 +17,7 @@ def _save_image(url, papername, date=None):
     ext = os.path.splitext(url.split('?')[0])[1] or '.jpg'
     if date is None:
         date = datetime.date.today()
-    path = f'./downloads/{date.isoformat()}-{papername}{ext}'
+    path = os.path.join(_DOWNLOADS_DIR, f'{date.isoformat()}-{papername}{ext}')
     with open(path, 'wb') as f:
         f.write(image_res.content)
     return path
