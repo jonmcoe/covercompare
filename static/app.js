@@ -334,7 +334,6 @@ function bindSubscribeForm() {
         return;
       }
 
-      document.getElementById('sub-id-display').textContent = data.id;
       document.getElementById('token-result').style.display = 'block';
       msg.textContent = 'Subscribed! Test image delivered to your Discord.';
       msg.className = 'ok';
@@ -357,11 +356,10 @@ function bindUnsubscribeForm() {
     msg.textContent = '';
     msg.className = '';
 
-    const id = document.getElementById('unsub-id').value.trim();
     const token = document.getElementById('unsub-token').value.trim();
 
-    if (!id || !token) {
-      msg.textContent = 'Please enter your subscription ID and webhook URL.';
+    if (!token) {
+      msg.textContent = 'Please enter your webhook URL.';
       msg.className = 'err';
       return;
     }
@@ -369,7 +367,7 @@ function bindUnsubscribeForm() {
     btn.disabled = true;
 
     try {
-      const res = await fetch(`/api/subscriptions/${encodeURIComponent(id)}`, {
+      const res = await fetch('/api/subscriptions', {
         method: 'DELETE',
         headers: { 'X-Webhook-Url': token },
       });

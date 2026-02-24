@@ -66,6 +66,16 @@ def deactivate_subscription(sub_id):
         conn.execute('UPDATE subscriptions SET active = 0 WHERE id = ?', (sub_id,))
 
 
+def deactivate_by_webhook(webhook_url):
+    """Deactivate the active subscription for a given webhook URL. Returns True if found."""
+    with _connect() as conn:
+        cur = conn.execute(
+            'UPDATE subscriptions SET active = 0 WHERE webhook_url = ? AND active = 1',
+            (webhook_url,),
+        )
+        return cur.rowcount > 0
+
+
 def record_success(sub_id, d):
     now = datetime.datetime.utcnow().isoformat()
     with _connect() as conn:

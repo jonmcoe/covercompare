@@ -200,13 +200,11 @@ def create_subscription():
     }), 201
 
 
-@app.route('/api/subscriptions/<int:sub_id>', methods=['DELETE'])
-def delete_subscription(sub_id):
-    webhook_url = request.headers.get('X-Webhook-Url', '')
-    sub = db.get_subscription(sub_id)
-    if sub is None or sub['webhook_url'] != webhook_url:
+@app.route('/api/subscriptions', methods=['DELETE'])
+def delete_subscription():
+    webhook_url = request.headers.get('X-Webhook-Url', '').strip()
+    if not webhook_url or not db.deactivate_by_webhook(webhook_url):
         abort(403)
-    db.deactivate_subscription(sub_id)
     return '', 204
 
 

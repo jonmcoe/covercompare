@@ -461,7 +461,7 @@
 </div>
 
 <div id="sub-section">
-  <h2 id="sub-toggle"><span id="sub-toggle-arrow">▶</span> Daily Discord Delivery</h2>
+  <h2 id="sub-toggle"><span id="sub-toggle-arrow">▶</span> Daily Delivery</h2>
   <div id="sub-content">
   <div class="sub-tabs">
     <div class="sub-tab active" data-panel="subscribe">Subscribe</div>
@@ -488,7 +488,7 @@
     </div>
 
     <div id="token-result">
-      <p>Subscribed! Subscription ID: <span id="sub-id-display"></span>. Use your webhook URL to unsubscribe.</p>
+      <p>Subscribed! Use your webhook URL to unsubscribe if needed.</p>
     </div>
 
     <div id="sub-msg"></div>
@@ -496,15 +496,9 @@
 
   <div class="sub-panel" id="panel-unsubscribe">
     <div class="sub-form">
-      <div class="sub-form-row">
-        <div style="flex:1">
-          <label>Subscription ID</label>
-          <input type="text" id="unsub-id" placeholder="123" />
-        </div>
-        <div style="flex:3">
-          <label>Webhook URL</label>
-          <input type="text" id="unsub-token" placeholder="https://discord.com/api/webhooks/..." />
-        </div>
+      <div>
+        <label>Webhook URL</label>
+        <input type="text" id="unsub-token" placeholder="https://discord.com/api/webhooks/..." />
       </div>
       <div>
         <button class="btn-danger" id="unsub-btn">Unsubscribe</button>
