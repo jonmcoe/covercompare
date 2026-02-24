@@ -4,6 +4,7 @@ let allPapers = [];   // [{key, name, format}]
 let allConfigs = {};  // {name: [keys]}
 let defaultPapers = [];
 let selectedPapers = [];  // ordered list of paper keys
+let updateCarouselArrows = () => {};  // set by bindCarousel
 
 // ---------------------------------------------------------------------------
 // Boot
@@ -207,9 +208,11 @@ function renderViewer() {
   const empty = document.getElementById('empty-state');
 
   viewer.querySelectorAll('.paper-col').forEach(col => col.remove());
+  viewer.scrollLeft = 0;
 
   if (selectedPapers.length === 0) {
     empty.style.display = '';
+    updateCarouselArrows();
     return;
   }
 
@@ -222,6 +225,8 @@ function renderViewer() {
     viewer.appendChild(col);
     loadColumnImage(col, key);
   });
+
+  setTimeout(updateCarouselArrows, 0);
 }
 
 function buildColumn(paper) {
@@ -411,6 +416,33 @@ function bindZoomModal() {
 }
 
 // ---------------------------------------------------------------------------
+// Carousel (mobile)
+// ---------------------------------------------------------------------------
+
+function bindCarousel() {
+  const viewer = document.getElementById('viewer');
+  const prev = document.getElementById('carousel-prev');
+  const next = document.getElementById('carousel-next');
+
+  updateCarouselArrows = function () {
+    const atStart = viewer.scrollLeft <= 4;
+    const atEnd = viewer.scrollLeft >= viewer.scrollWidth - viewer.clientWidth - 4;
+    prev.disabled = atStart;
+    next.disabled = atEnd;
+  };
+
+  function scrollSlide(dir) {
+    const col = viewer.querySelector('.paper-col');
+    if (!col) return;
+    viewer.scrollBy({ left: dir * (col.offsetWidth + 12), behavior: 'smooth' });
+  }
+
+  prev.addEventListener('click', () => scrollSlide(-1));
+  next.addEventListener('click', () => scrollSlide(1));
+  viewer.addEventListener('scroll', updateCarouselArrows, { passive: true });
+}
+
+// ---------------------------------------------------------------------------
 // About modal
 // ---------------------------------------------------------------------------
 
@@ -450,3 +482,4 @@ init().catch(console.error);
 bindSubToggle();
 bindZoomModal();
 bindAboutModal();
+bindCarousel();
