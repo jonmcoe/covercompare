@@ -67,12 +67,6 @@ papers:
     sources:
       - source: freedomforum
         code: NJ_SL
-  philly-inquirer:
-    name: "Philadelphia Inquirer"
-    format: broadsheet
-    sources:
-      - source: frontpages
-        slug: the-philadelphia-inquirer
   pittsburgh-pg:
     name: "Pittsburgh Post-Gazette"
     format: broadsheet
@@ -95,8 +89,6 @@ papers:
     sources:
       - source: freedomforum
         code: GA_AJC
-      - source: frontpages
-        slug: the-atlanta-journal-constitution
 
   # --- Midwest ---
   chicago-tribune:
@@ -130,14 +122,6 @@ papers:
       - source: freedomforum
         code: TX_HC
 
-  # --- Mountain West ---
-  denver-post:
-    name: "Denver Post"
-    format: broadsheet
-    sources:
-      - source: freedomforum
-        code: CO_DH
-
   # --- West Coast ---
   latimes:
     name: "LA Times"
@@ -145,8 +129,6 @@ papers:
     sources:
       - source: freedomforum
         code: CA_LAT
-      - source: frontpages
-        slug: the-los-angeles-times
   sfchronicle:
     name: "SF Chronicle"
     format: broadsheet
