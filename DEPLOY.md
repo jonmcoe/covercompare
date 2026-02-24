@@ -37,8 +37,14 @@ python db.py
 
 ## 4. Environment variables
 
-The `.env` file is sourced by the existing cron wrapper scripts. The systemd
-service (below) also loads it via `EnvironmentFile`.
+`COVERCOMPARE_DISCORD_WEBHOOK` is only needed for CLI/cron invocations of
+`post_today.py` and `flashback.py` — scripts that call `discord.post()` without
+an explicit webhook URL. The webapp itself does not use it; webhook URLs come
+from the subscriptions database.
+
+If you're relying solely on the webapp's subscription delivery (`deliver.py`
+reads webhook URLs from the DB), you can skip this. If you want `post_today.py`
+or manual flashback posts to keep working, set it:
 
 ```bash
 # /srv/covercompare/.env  (already gitignored)
