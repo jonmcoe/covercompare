@@ -18,7 +18,16 @@ git pull
 
 ## 2. Install dependencies
 
+gevent requires C build tools. On AL2023/RHEL-based systems, install them first:
+
 ```bash
+sudo dnf install -y python3-devel gcc
+```
+
+Then:
+
+```bash
+python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
