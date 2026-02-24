@@ -12,7 +12,6 @@ duplication of fetches.
 ```bash
 cd /srv/covercompare   # or wherever it lives
 git pull
-git checkout webapp    # until merged to master
 ```
 
 ---

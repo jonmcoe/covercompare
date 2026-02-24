@@ -1,19 +1,19 @@
 # covercompare
 
-A bot that fetches New York newspaper front pages, combines them side-by-side, and posts the comparison image to Discord daily.
+A webapp and bot that fetches US newspaper front pages, displays them side-by-side in a browser, and posts daily combined images to Discord.
 
 ## Papers
 
-| Key | Paper | Source |
-|---|---|---|
-| `nypost` | NY Post | Direct CDN at `nypost.com/wp-content/uploads/...` |
-| `newsday` | Newsday | CloudFront CDN at `d2dr22b2lm4tvw.cloudfront.net/ny_nd/...` |
-| `dailynews` | NY Daily News | `frontpages.com` (1200px) |
-| `wsj` | Wall Street Journal | `kiosko.net` (750px; skips Sundays) |
-| `nytimes` | NY Times | `frontpages.com` (1200px), `freedomforum` fallback |
-| `washpost` | Washington Post | `frontpages.com` (1200px), `freedomforum` fallback |
-| `boston-globe` | Boston Globe | `freedomforum` (700px), `frontpages.com` fallback |
-| `miami-herald` | Miami Herald | `freedomforum` (700px), `frontpages.com` fallback |
+21 papers across 5 configs. See `papers.yaml` for the full list. A few highlights:
+
+| Region | Papers |
+|---|---|
+| New York | NY Post, Newsday, NY Daily News |
+| National | NY Times, Washington Post, USA Today, Wall Street Journal |
+| Northeast | Boston Globe, Philadelphia Inquirer, NJ Star-Ledger, Pittsburgh Post-Gazette |
+| Southeast | Miami Herald, Atlanta Journal-Constitution |
+| Midwest | Chicago Tribune, Chicago Sun-Times, Dallas Morning News, Houston Chronicle |
+| West | LA Times, SF Chronicle, Seattle Times, Denver Post |
 
 Papers with multiple sources try them in order — first success wins. See `papers.yaml` and `CLAUDE.md` for adding more.
 
@@ -56,9 +56,13 @@ python flashback.py 2023-04-01
 
 | File | Purpose |
 |---|---|
-| `post_today.py` | Main entry point: fetch, combine, post |
+| `post_today.py` | CLI entry point: fetch, combine, post |
 | `papers.yaml` | Paper definitions and named run configs |
 | `fetch.py` | Downloads cover images from paper sources |
 | `combine.py` | Tiles N images side-by-side with optional whitespace trimming |
 | `discord.py` | Posts image to Discord via webhook |
 | `flashback.py` | Re-posts a historical combined image |
+| `app.py` | Flask webapp: viewer API + subscription endpoints |
+| `db.py` | SQLite wrapper for subscriptions |
+| `prefetch.py` | Cron script: warm image cache each morning |
+| `deliver.py` | Cron script: deliver to all active subscriptions |

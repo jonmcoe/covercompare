@@ -122,16 +122,16 @@ my-paper:
 **`kiosko` source** — 750px wide JPEG, good for papers not on frontpages/freedomforum (e.g. WSJ)
 - Browse index: https://www.kiosko.net/us/ — URL slug is from `/us/np/{slug}.html`
 - Date is scraped from the page rather than passed as a parameter — always reflects the most recent available issue, handling publication gaps (e.g. WSJ skips Sundays) automatically
-- **Historical dates**: supported via direct URL (`img.kiosko.net/YYYY/MM/DD/us/{slug}.750.jpg`) but `_fetch_kiosko` ignores the `d` parameter and always fetches the latest
+- **Historical dates**: not supported — always fetches the latest available issue; saves under the actual paper date extracted from the page URL
 
 **Historical date support by source** (relevant for flashback runs and `post_today.py YYYY-MM-DD`):
 
 | Source | Historical dates? | Notes |
 |---|---|---|
-| `nypost_direct` | Yes | Full date in CDN URL |
+| `nypost_scrape` | Yes | Scrapes cover archive page by date |
 | `newsday_cloudfront` | Yes | Full ISO date in CDN URL |
-| `kiosko` | No — always latest | Scrapes page date; ignores `d` |
-| `frontpages` | No — always latest | Scrapes live page; ignores `d` |
+| `kiosko` | No — always latest | Scrapes page date; saves under actual paper date |
+| `frontpages` | No — always latest | Scrapes live page; saves under actual paper date |
 | `freedomforum` | No — today only | URL uses day-of-month only, no year/month |
 
 **Choosing between sources for a paper on multiple**: prefer frontpages for resolution; prefer freedomforum for stability (no scraping). If frontpages changes its obfuscation scheme it will break all frontpages fetches at once.
