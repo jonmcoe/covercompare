@@ -93,33 +93,30 @@ def _fetch_kiosko(slug, papername, d):
     return _save_image(url, papername, date=actual_date)
 
 
-def _fetch_nypost_direct(papername, d):
-    """NY Post direct CDN — constructs URL from date parts."""
-    today = d or datetime.date.today()
-    template = "https://nypost.com/wp-content/uploads/sites/2/{0}/{1}/{2}.P1_LCF.jpg?resize=1393,1536&quality=90&strip=all"
-    url = template.format(
-        today.strftime('%Y'),
-        today.strftime('%m'),
-        today.strftime('%B').upper() + today.strftime('%d'),
-    )
-    print(url)
-    return _save_image(url, papername)
+def _fetch_nypost_scrape(papername, d):
+    """NY Post cover page scrape — discovers the actual P1 image URL.
+
+    The filename suffix (e.g. _LCF, _SX) varies day-to-day so we scrape the
+    cover archive page to find it rather than constructing the URL directly.
+    Supports historical dates since the archive goes back years.
+    """
+    d = d or datetime.date.today()
+    date_str = d.strftime('%B-%d-%Y').lower().replace('-0', '-')
+    r = requests.get(f'https://nypost.com/cover/{date_str}/', headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+    })
+    r.raise_for_status()
+    m = re.search(r'https://nypost\.com/wp-content/uploads/sites/2/\d{4}/\d{2}/\w+\.P1[^\s"\'<]+\.jpg', r.text)
+    if not m:
+        raise RuntimeError(f'Could not find P1 image URL in NY Post cover page for {date_str}')
+    return _save_image(m.group(0), papername)
+
 
 
 def _fetch_newsday_cloudfront(papername, d):
     """Newsday CloudFront CDN — direct by date."""
     d = d or datetime.date.today()
     return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername)
-
-
-# def _fetch_nypost_scrape(papername, d):
-#     today = d or datetime.date.today()
-#     today_string = today.strftime('%B-%d-%Y').lower().replace('-0', '-')
-#     page_html = requests.get(f'https://nypost.com/cover/{today_string}/').content
-#     soup = bs4.BeautifulSoup(page_html, features="html.parser")
-#     image_element = soup.find('img', attrs={'class': 'cover-swap__image cover-swap__image--front'})
-#     image_url = image_element.attrs['srcset'].split('?')[0]
-#     return _save_image(image_url, papername)
 
 
 def _fetch_source(source_cfg, papername, d):
@@ -131,8 +128,8 @@ def _fetch_source(source_cfg, papername, d):
         return _fetch_freedomforum(source_cfg['code'], papername, d)
     elif source == 'kiosko':
         return _fetch_kiosko(source_cfg['slug'], papername, d)
-    elif source == 'nypost_direct':
-        return _fetch_nypost_direct(papername, d)
+    elif source == 'nypost_scrape':
+        return _fetch_nypost_scrape(papername, d)
     elif source == 'newsday_cloudfront':
         return _fetch_newsday_cloudfront(papername, d)
     else:
@@ -156,6 +153,6 @@ def fetch_paper(cfg, papername, d):
 
 if __name__ == '__main__':
     d = datetime.date.today()
-    _fetch_nypost_direct('nypost', d)
+    _fetch_nypost_scrape('nypost', d)
     _fetch_frontpages('daily-news', 'dailynews', d)
     _fetch_newsday_cloudfront('newsday', d)
