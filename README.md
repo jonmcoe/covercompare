@@ -12,7 +12,7 @@ Browse today's front pages at [covercompare.io](https://covercompare.io). Select
 
 ## Papers
 
-19 papers across named configs. See `papers.yaml` for the full list.
+20 papers across named configs. See `papers.yaml` for the full list.
 
 | Region | Papers |
 |---|---|
@@ -21,7 +21,7 @@ Browse today's front pages at [covercompare.io](https://covercompare.io). Select
 | Northeast | Boston Globe, NJ Star-Ledger, Pittsburgh Post-Gazette |
 | Southeast | Miami Herald, Atlanta Journal-Constitution |
 | Midwest | Chicago Tribune, Chicago Sun-Times, Dallas Morning News, Houston Chronicle |
-| West | LA Times, SF Chronicle, Seattle Times |
+| Mountain/West | Denver Post, LA Times, SF Chronicle, Seattle Times |
 
 Papers with multiple sources try them in order — first success wins. See `papers.yaml` and `CLAUDE.md` for adding more.
 
