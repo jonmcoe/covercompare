@@ -4,7 +4,9 @@ papers:
     name: "NY Post"
     format: tabloid
     sources:
-      - source: nypost_direct
+      - source: nypost_scrape       # scrapes cover page to find actual P1_*.jpg suffix
+      - source: frontpages
+        slug: new-york-post         # 1200px WebP fallback
   newsday:
     name: "Newsday"
     format: tabloid

@@ -25,9 +25,11 @@ python flashback.py 2023-04-01
 
 ## Paper sources
 
-- **NY Post** (`nypost`): direct CDN URL at `nypost.com/wp-content/uploads/...`
+- **NY Post** (`nypost`): scrapes `nypost.com/cover/{date}/` to find the actual `P1_*.jpg` CDN filename (suffix varies day-to-day, e.g. `_LCF`, `_SX`); frontpages fallback
 - **Newsday** (`newsday`): CloudFront CDN at `d2dr22b2lm4tvw.cloudfront.net/ny_nd/...`; has extra whitespace, trimmed automatically
 - **NY Daily News** (`dailynews`): scraped from `frontpages.com/daily-news/` via base64-obfuscated script tag
+
+**Potential future source — PressReader** (`pressreader.com`): hosts digital editions of many papers (e.g. `nypost.pressreader.com`, likely others). Not yet implemented; worth exploring as an additional fallback source.
 
 ## papers.yaml
 
