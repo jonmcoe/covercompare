@@ -225,17 +225,28 @@ def create_subscription():
     today = datetime.date.today()
     combined_path = os.path.join(_GENERATED_DIR, f'{today.isoformat()}-test-{uuid.uuid4().hex[:8]}.jpg')
     os.makedirs(_GENERATED_DIR, exist_ok=True)
+
+    # For email subs, create the record first so the test email carries the real unsubscribe ID.
+    # For Discord, keep the original order (webhook validity is proven by the test post).
+    sub = None
+    if sub_type == 'email':
+        sub = db.create_subscription(
+            destination=destination, papers=papers, label=label,
+            ip_address=ip, subscription_type=sub_type,
+        )
+
     try:
         paths, trim_flags = _fetch_papers(papers, cfg, today)
         combine.combine(paths, combined_path, trim_flags)
         if sub_type == 'email':
-            # Use sub_id=0 as placeholder for the test delivery unsubscribe link
-            email_delivery.send(combined_path, today, to_email=destination, label=label, sub_id=0)
+            email_delivery.send(combined_path, today, to_email=destination, label=label, sub_id=sub['id'])
         else:
             resp = discord.post(combined_path, today, webhook_url=destination, username=label or None)
             if not (200 <= resp.status_code < 300):
                 return jsonify({'error': f'Test delivery failed: HTTP {resp.status_code}'}), 400
     except Exception as e:
+        if sub:
+            db.deactivate_subscription(sub['id'])
         return jsonify({'error': f'Test delivery error: {e}'}), 400
     finally:
         try:
@@ -243,13 +254,11 @@ def create_subscription():
         except OSError:
             pass
 
-    sub = db.create_subscription(
-        destination=destination,
-        papers=papers,
-        label=label,
-        ip_address=ip,
-        subscription_type=sub_type,
-    )
+    if not sub:
+        sub = db.create_subscription(
+            destination=destination, papers=papers, label=label,
+            ip_address=ip, subscription_type=sub_type,
+        )
 
     return jsonify({
         'id': sub['id'],
