@@ -25,6 +25,7 @@ import yaml
 import combine
 import db
 import discord
+import email_delivery
 import fetch
 
 
@@ -101,19 +102,34 @@ def deliver_subscription(sub, cfg, today, tolerate_miss=False):
         print(f'[sub {sub_id}] FAILED (fetch): {error_msg}', file=sys.stderr)
         return
 
-    extra_text = ""
-    if failed:
-        names = [cfg['papers'][k]['name'] if k in cfg['papers'] else k for k in failed]
-        extra_text = f"⚠️ Sorry! Couldn't fetch: {', '.join(names)}\n\n"
-        print(f'[sub {sub_id}] partial delivery, missing: {failed}')
+    missing_names = [cfg['papers'][k]['name'] if k in cfg['papers'] else k for k in failed]
 
     try:
         combine.combine(paths, combined_path, trim_flags)
-        resp = discord.post(combined_path, today, extra_text=extra_text, webhook_url=sub['webhook_url'], username=sub['label'] or None)
-        if not (200 <= resp.status_code < 300):
-            raise RuntimeError(f'Discord returned HTTP {resp.status_code}: {resp.text[:200]}')
+        sub_type = sub.get('subscription_type', 'discord')
+        if sub_type == 'email':
+            extra_note = (
+                f"⚠️ Sorry! Couldn't fetch: {', '.join(missing_names)}\n\n"
+                if missing_names else ""
+            )
+            email_delivery.send(
+                combined_path, today,
+                to_email=sub['destination'],
+                label=sub['label'] or None,
+                sub_id=sub_id,
+                extra_note=extra_note,
+            )
+            print(f'[sub {sub_id}] OK (email)')
+        else:
+            extra_text = (
+                f"⚠️ Sorry! Couldn't fetch: {', '.join(missing_names)}\n\n"
+                if missing_names else ""
+            )
+            resp = discord.post(combined_path, today, extra_text=extra_text, webhook_url=sub['destination'], username=sub['label'] or None)
+            if not (200 <= resp.status_code < 300):
+                raise RuntimeError(f'Discord returned HTTP {resp.status_code}: {resp.text[:200]}')
+            print(f'[sub {sub_id}] OK (HTTP {resp.status_code})')
         db.record_success(sub_id, today)
-        print(f'[sub {sub_id}] OK (HTTP {resp.status_code})')
     except Exception as e:
         error_msg = str(e)
         db.record_error(sub_id, error_msg)

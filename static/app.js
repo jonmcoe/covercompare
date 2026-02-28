@@ -304,6 +304,13 @@ function updateSubPapersNote() {
   }
 }
 
+const _DISCORD_RE = /^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//;
+const _EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function _isValidDestination(val) {
+  return _DISCORD_RE.test(val) || _EMAIL_RE.test(val);
+}
+
 function bindSubscribeForm() {
   const btn = document.getElementById('sub-btn');
   const msg = document.getElementById('sub-msg');
@@ -312,12 +319,12 @@ function bindSubscribeForm() {
     msg.textContent = '';
     msg.className = '';
 
-    const webhook_url = document.getElementById('sub-webhook').value.trim();
+    const destination = document.getElementById('sub-destination').value.trim();
     const label = document.getElementById('sub-label').value.trim() || null;
     const papers = [...selectedPapers];
 
-    if (!webhook_url) {
-      msg.textContent = 'Please enter a Discord webhook URL.';
+    if (!destination || !_isValidDestination(destination)) {
+      msg.textContent = 'Please enter a valid Discord webhook URL or email address.';
       msg.className = 'err';
       return;
     }
@@ -330,11 +337,13 @@ function bindSubscribeForm() {
     btn.disabled = true;
     btn.textContent = 'Sending test…';
 
+    const isEmail = _EMAIL_RE.test(destination);
+
     try {
       const res = await fetch('/api/subscriptions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webhook_url, papers, label }),
+        body: JSON.stringify({ destination, papers, label }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -343,9 +352,11 @@ function bindSubscribeForm() {
         return;
       }
 
-      gtag('event', 'subscribe', { paper_count: papers.length });
+      gtag('event', 'subscribe', { paper_count: papers.length, destination_type: isEmail ? 'email' : 'discord' });
       document.getElementById('token-result').style.display = 'block';
-      msg.textContent = 'Subscribed! Test image delivered to your Discord.';
+      msg.textContent = isEmail
+        ? 'Subscribed! Test image delivered to your inbox.'
+        : 'Subscribed! Test image delivered to your Discord.';
       msg.className = 'ok';
     } catch (e) {
       msg.textContent = 'Network error — please try again.';
@@ -355,7 +366,6 @@ function bindSubscribeForm() {
       btn.textContent = 'Subscribe & Send Test';
     }
   });
-
 }
 
 function bindUnsubscribeForm() {
@@ -366,10 +376,10 @@ function bindUnsubscribeForm() {
     msg.textContent = '';
     msg.className = '';
 
-    const token = document.getElementById('unsub-token').value.trim();
+    const destination = document.getElementById('unsub-token').value.trim();
 
-    if (!token) {
-      msg.textContent = 'Please enter your webhook URL.';
+    if (!destination || !_isValidDestination(destination)) {
+      msg.textContent = 'Please enter your Discord webhook URL or email address.';
       msg.className = 'err';
       return;
     }
@@ -379,14 +389,14 @@ function bindUnsubscribeForm() {
     try {
       const res = await fetch('/api/subscriptions', {
         method: 'DELETE',
-        headers: { 'X-Webhook-Url': token },
+        headers: { 'X-Destination': destination },
       });
       if (res.status === 204) {
         gtag('event', 'unsubscribe');
         msg.textContent = 'Unsubscribed successfully.';
         msg.className = 'ok';
       } else if (res.status === 403) {
-        msg.textContent = 'Invalid ID or webhook URL.';
+        msg.textContent = 'No active subscription found for that destination.';
         msg.className = 'err';
       } else {
         msg.textContent = `Error: HTTP ${res.status}`;

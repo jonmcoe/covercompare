@@ -603,11 +603,11 @@
   <div class="sub-panel active" id="panel-subscribe">
     <div class="sub-form">
       <div>
-        <label>Discord webhook URL</label>
-        <input type="url" id="sub-webhook" placeholder="https://discord.com/api/webhooks/..." />
+        <label>Destination — Discord webhook URL or email address</label>
+        <input type="text" id="sub-destination" placeholder="https://discord.com/api/webhooks/… or you@example.com" />
       </div>
       <div>
-        <label>Sender name — overrides your webhook's default (optional)</label>
+        <label>Label (optional) — sender name for Discord, subject modifier for email</label>
         <input type="text" id="sub-label" placeholder="e.g. Morning Reads" maxlength="80" />
       </div>
       <div>
@@ -620,7 +620,7 @@
     </div>
 
     <div id="token-result">
-      <p>Subscribed! Use your webhook URL to unsubscribe if needed.</p>
+      <p>Subscribed! Use your webhook URL or email address to unsubscribe if needed.</p>
     </div>
 
     <div id="sub-msg"></div>
@@ -629,8 +629,8 @@
   <div class="sub-panel" id="panel-unsubscribe">
     <div class="sub-form">
       <div>
-        <label>Webhook URL</label>
-        <input type="text" id="unsub-token" placeholder="https://discord.com/api/webhooks/..." />
+        <label>Destination — Discord webhook URL or email address</label>
+        <input type="text" id="unsub-token" placeholder="https://discord.com/api/webhooks/… or you@example.com" />
       </div>
       <div>
         <button class="btn-danger" id="unsub-btn">Unsubscribe</button>

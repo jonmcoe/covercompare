@@ -8,9 +8,10 @@ DB_PATH = os.path.join(os.path.dirname(__file__), 'subscriptions.db')
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS subscriptions (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
-    webhook_url       TEXT    NOT NULL,
+    destination       TEXT    NOT NULL,
+    subscription_type TEXT    NOT NULL DEFAULT 'discord',
     papers            TEXT    NOT NULL,
-    label             TEXT,               -- user-supplied Discord sender name override; poorly named, not worth migrating
+    label             TEXT,               -- optional: Discord sender name or email subject modifier
     ip_address        TEXT,
     created_at        TEXT    NOT NULL,
     last_posted_at    TEXT,
@@ -35,15 +36,15 @@ def init():
         conn.executescript(SCHEMA)
 
 
-def create_subscription(webhook_url, papers, label, ip_address):
+def create_subscription(destination, papers, label, ip_address, subscription_type='discord'):
     now = datetime.datetime.utcnow().isoformat()
     papers_json = json.dumps(papers)
     with _connect() as conn:
         cur = conn.execute(
             """INSERT INTO subscriptions
-               (webhook_url, papers, label, ip_address, created_at)
-               VALUES (?, ?, ?, ?, ?)""",
-            (webhook_url, papers_json, label, ip_address, now),
+               (destination, subscription_type, papers, label, ip_address, created_at)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (destination, subscription_type, papers_json, label, ip_address, now),
         )
         sub_id = cur.lastrowid
     return get_subscription(sub_id)
@@ -66,12 +67,12 @@ def deactivate_subscription(sub_id):
         conn.execute('UPDATE subscriptions SET active = 0 WHERE id = ?', (sub_id,))
 
 
-def deactivate_by_webhook(webhook_url):
-    """Deactivate the active subscription for a given webhook URL. Returns True if found."""
+def deactivate_by_destination(destination):
+    """Deactivate the active subscription for a given destination. Returns True if found."""
     with _connect() as conn:
         cur = conn.execute(
-            'UPDATE subscriptions SET active = 0 WHERE webhook_url = ? AND active = 1',
-            (webhook_url,),
+            'UPDATE subscriptions SET active = 0 WHERE destination = ? AND active = 1',
+            (destination,),
         )
         return cur.rowcount > 0
 
