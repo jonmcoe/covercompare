@@ -152,8 +152,8 @@ def index():
     return app.send_static_file('index.html')
 
 
-@app.route('/unsubscribe')
-def unsubscribe():
+@app.route('/unsubscribe', methods=['GET'])
+def unsubscribe_confirm():
     sub_id_str = request.args.get('id', '').strip()
     try:
         sub_id = int(sub_id_str)
@@ -162,7 +162,50 @@ def unsubscribe():
 
     sub = db.get_subscription(sub_id)
     if sub is None or not sub['active']:
-        # Already unsubscribed or never existed — still show a graceful message
+        return _unsubscribe_page("You're already unsubscribed (or this link has expired)."), 200
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CoverCompare — Unsubscribe</title>
+  <style>
+    body {{ margin: 0; background: #111; color: #eee; font-family: sans-serif;
+           display: flex; align-items: center; justify-content: center; min-height: 100vh; }}
+    .box {{ text-align: center; padding: 40px 24px; max-width: 480px; }}
+    h1 {{ font-size: 20px; margin: 0 0 16px; }}
+    p {{ color: #aaa; margin: 0 0 24px; line-height: 1.5; }}
+    a {{ color: #888; }}
+    button {{ background: #c44; color: #fff; border: none; padding: 10px 24px;
+              font-size: 0.95rem; border-radius: 6px; cursor: pointer; }}
+    button:hover {{ background: #a33; }}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>CoverCompare</h1>
+    <p>Unsubscribe from daily cover deliveries?</p>
+    <form method="POST" action="/unsubscribe">
+      <input type="hidden" name="id" value="{sub_id}">
+      <button type="submit">Confirm unsubscribe</button>
+    </form>
+    <p style="margin-top:20px;"><a href="/">Back to CoverCompare</a></p>
+  </div>
+</body>
+</html>"""
+
+
+@app.route('/unsubscribe', methods=['POST'])
+def unsubscribe_execute():
+    sub_id_str = (request.form.get('id') or '').strip()
+    try:
+        sub_id = int(sub_id_str)
+    except (ValueError, TypeError):
+        return _unsubscribe_page('Invalid unsubscribe request.'), 400
+
+    sub = db.get_subscription(sub_id)
+    if sub is None or not sub['active']:
         return _unsubscribe_page("You're already unsubscribed (or this link has expired)."), 200
 
     db.deactivate_subscription(sub_id)
