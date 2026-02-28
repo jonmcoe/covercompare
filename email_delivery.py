@@ -79,10 +79,14 @@ def send(path, date, to_email, label, sub_id, extra_note=''):
     with open(path, 'rb') as f:
         image_data = f.read()
 
+    reply_to = os.environ.get('SMTP_REPLY_TO')
+
     msg = MIMEMultipart('related')
     msg['Subject'] = subject
     msg['From'] = f'{cfg["from_name"]} <{cfg["from_email"]}>'
     msg['To'] = to_email
+    if reply_to:
+        msg['Reply-To'] = reply_to
 
     alt = MIMEMultipart('alternative')
     alt.attach(MIMEText(plain_body, 'plain'))
