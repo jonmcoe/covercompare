@@ -70,7 +70,10 @@ def send(path, date, to_email, label, sub_id, extra_note=''):
 <body style="margin:0;padding:20px;background:#111;font-family:sans-serif;color:#eee;">
   {extra_html}<p style="margin:0 0 16px;font-size:14px;color:#aaa;">{formatted_date}</p>
   <img src="cid:cover_image" style="max-width:100%;display:block;border:0;" alt="Today's newspaper covers">
-  <p style="margin:24px 0 0;font-size:12px;color:#666;">
+  <p style="margin:24px 0 8px;font-size:13px;color:#aaa;">
+    <a href="{base_url}" style="color:#aaa;">See more at {base_url}</a>
+  </p>
+  <p style="margin:0;font-size:12px;color:#666;">
     <a href="{unsubscribe_url}" style="color:#888;">Unsubscribe</a>
   </p>
 </body>
