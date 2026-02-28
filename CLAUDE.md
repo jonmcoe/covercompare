@@ -1,6 +1,6 @@
 # covercompare
 
-Daily NY newspaper front page comparison bot. Fetches covers, combines them side-by-side, posts to Discord.
+Daily newspaper front page viewer and delivery service. Fetches covers, combines them side-by-side, and delivers via Discord webhook or email. Live at https://covercompare.io.
 
 ## Running the bot
 
@@ -21,7 +21,15 @@ python flashback.py 2023-04-01
 
 ## Environment variables
 
-- `COVERCOMPARE_DISCORD_WEBHOOK` — Discord webhook URL (required for posting)
+- `COVERCOMPARE_DISCORD_WEBHOOK` — Discord webhook URL (required for `post_today.py` / `flashback.py`)
+- `SMTP_HOST` — SMTP server (e.g. `smtp-relay.brevo.com`)
+- `SMTP_PORT` — SMTP port, defaults to `587`
+- `SMTP_USER` — SMTP login
+- `SMTP_PASSWORD` — SMTP password / API key
+- `SMTP_FROM_EMAIL` — verified sender address (e.g. `deliveries@covercompare.io`)
+- `SMTP_FROM_NAME` — sender display name, defaults to `CoverCompare`
+- `SMTP_REPLY_TO` — optional Reply-To address
+- `COVERCOMPARE_BASE_URL` — base URL for unsubscribe links (e.g. `https://covercompare.io`)
 
 ## Paper sources
 
