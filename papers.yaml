@@ -67,6 +67,24 @@ papers:
     sources:
       - source: freedomforum
         code: NJ_SL
+  philly-inquirer:
+    name: "Philadelphia Inquirer"
+    format: broadsheet
+    sources:
+      - source: kiosko
+        slug: philadelphia_inquirer
+  albany-times-union:
+    name: "Albany Times Union"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: NY_TU
+  delaware-news-journal:
+    name: "Delaware News Journal"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: DE_NJ
   pittsburgh-pg:
     name: "Pittsburgh Post-Gazette"
     format: broadsheet
