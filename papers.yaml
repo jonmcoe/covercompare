@@ -67,6 +67,18 @@ papers:
     sources:
       - source: freedomforum
         code: NJ_SL
+  courier-post:
+    name: "Courier-Post (South Jersey)"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: NJ_CP
+  press-of-atlantic-city:
+    name: "Press of Atlantic City"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: NJ_PAC
   philly-inquirer:
     name: "Philadelphia Inquirer"
     format: broadsheet
