@@ -71,7 +71,7 @@ def _fetch_freedomforum(code, papername, d):
     """
     d = d or datetime.date.today()
     url = f'https://cdn.freedomforum.org/dfp/jpg{d.day}/lg/{code}.jpg'
-    return _save_image(url, papername)
+    return _save_image(url, papername, date=d)
 
 
 def _fetch_kiosko(slug, papername, d):
@@ -112,14 +112,13 @@ def _fetch_nypost_scrape(papername, d):
     m = re.search(r'https://nypost\.com/wp-content/uploads/sites/2/\d{4}/\d{2}/\w+\.P1[^\s"\'<]+\.jpg', r.text)
     if not m:
         raise RuntimeError(f'Could not find P1 image URL in NY Post cover page for {date_str}')
-    return _save_image(m.group(0), papername)
-
+    return _save_image(m.group(0), papername, date=d)
 
 
 def _fetch_newsday_cloudfront(papername, d):
     """Newsday CloudFront CDN — direct by date."""
     d = d or datetime.date.today()
-    return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername)
+    return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername, date=d)
 
 
 def _fetch_source(source_cfg, papername, d):
