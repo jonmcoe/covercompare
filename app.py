@@ -1,12 +1,18 @@
+import collections
 import datetime
 import glob
 import io
+import json
 import os
+import re
+import time
 import uuid
+from zoneinfo import ZoneInfo
 
 import yaml
 from flask import Flask, jsonify, request, send_file, abort
 from PIL import Image
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import combine
 import db
@@ -14,11 +20,11 @@ import discord
 import email_delivery
 import fetch
 
+
 app = Flask(__name__, static_folder='static', static_url_path='')
 
 # Trust one level of X-Forwarded-For (set by nginx); prevents IP spoofing
 # for rate limiting. x_proto needed so url_for() generates https:// links.
-from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
 # ---------------------------------------------------------------------------
@@ -29,12 +35,16 @@ _PAPERS_YAML_PATH = os.path.join(os.path.dirname(__file__), 'papers.yaml')
 _DOWNLOADS_DIR = os.path.join(os.path.dirname(__file__), 'downloads')
 _GENERATED_DIR = os.path.join(os.path.dirname(__file__), 'generated_images')
 
-import re
-
+_ET = ZoneInfo('America/New_York')
 DISCORD_DOMAINS = {'discord.com', 'discordapp.com'}
 AUTO_DEACTIVATE_THRESHOLD = 7
 _DISCORD_RE = re.compile(r'^https://(discord\.com|discordapp\.com)/api/webhooks/')
 _EMAIL_RE = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+_rate_buckets = collections.defaultdict(list)
+
+
+def _today_et():
+    return datetime.datetime.now(_ET).date()
 
 
 def _infer_destination_type(destination):
@@ -67,11 +77,6 @@ def _cached_combined_path(paper_keys, d):
 # ---------------------------------------------------------------------------
 # Simple in-memory rate limiter
 # ---------------------------------------------------------------------------
-
-import time
-import collections
-
-_rate_buckets = collections.defaultdict(list)
 
 def _rate_limit(key, max_calls, window_seconds):
     """Returns True if the call should be allowed, False if rate-limited."""
@@ -113,7 +118,7 @@ def api_paper(key):
 
     date_str = request.args.get('date')
     try:
-        d = datetime.date.fromisoformat(date_str) if date_str else datetime.date.today()
+        d = datetime.date.fromisoformat(date_str) if date_str else _today_et()
     except ValueError:
         abort(400)
 
@@ -265,7 +270,7 @@ def create_subscription():
     if invalid:
         return jsonify({'error': f'Unknown paper keys: {invalid}'}), 400
 
-    today = datetime.date.today()
+    today = _today_et()
     combined_path = os.path.join(_GENERATED_DIR, f'{today.isoformat()}-test-{uuid.uuid4().hex[:8]}.jpg')
     os.makedirs(_GENERATED_DIR, exist_ok=True)
 
@@ -319,37 +324,6 @@ def delete_subscription():
     return '', 204
 
 
-@app.route('/api/subscriptions/<int:sub_id>/preview')
-def preview_subscription(sub_id):
-    destination = request.headers.get('X-Destination', '')
-    sub = db.get_subscription(sub_id)
-    if sub is None or sub['destination'] != destination:
-        abort(403)
-    if not sub['active']:
-        return jsonify({'error': 'Subscription is inactive'}), 400
-
-    import json
-    papers = json.loads(sub['papers'])
-    today = datetime.date.today()
-    cfg = _load_yaml()
-
-    try:
-        paths, trim_flags = _fetch_papers(papers, cfg, today)
-        combined_path = os.path.join(_GENERATED_DIR, f'{today.isoformat()}-preview-{sub_id}.jpg')
-        os.makedirs(_GENERATED_DIR, exist_ok=True)
-        combine.combine(paths, combined_path, trim_flags)
-        sub_type = sub.get('subscription_type', 'discord')
-        if sub_type == 'email':
-            email_delivery.send(combined_path, today, to_email=sub['destination'], label=sub['label'] or None, sub_id=sub_id)
-            db.record_success(sub_id, today)
-            return jsonify({'status': 'delivered'})
-        else:
-            resp = discord.post(combined_path, today, webhook_url=sub['destination'], username=sub['label'] or None)
-            db.record_success(sub_id, today)
-            return jsonify({'status': 'delivered', 'discord_status': resp.status_code})
-    except Exception as e:
-        db.record_error(sub_id, str(e))
-        return jsonify({'error': str(e)}), 502
 
 
 # ---------------------------------------------------------------------------
