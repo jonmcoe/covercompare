@@ -97,6 +97,12 @@ papers:
     sources:
       - source: freedomforum
         code: DE_NJ
+  rochester-democrat:
+    name: "Rochester Democrat & Chronicle"
+    format: broadsheet
+    sources:
+      - source: freedomforum
+        code: NY_RDC
   pittsburgh-pg:
     name: "Pittsburgh Post-Gazette"
     format: broadsheet
