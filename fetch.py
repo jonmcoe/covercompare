@@ -1,8 +1,10 @@
 import base64
 import datetime
+import email.utils
 import os
 import re
 import requests
+from zoneinfo import ZoneInfo
 
 
 _DOWNLOADS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'downloads')
@@ -129,11 +131,29 @@ def _fetch_pagesuite(pbid, papername, d):
     Always returns today's edition — no historical date support.
     The pbid is a fixed UUID per publication, found in the paper's replica JS.
 
+    Uses the Last-Modified response header (converted to ET) to determine the
+    actual edition date, preventing cache poisoning if the new edition hasn't
+    uploaded yet when we fetch.
+
     e.g. Seattle Times pbid: 84d463e0-c035-4c49-902d-95c722bfe073
     """
     d = d or datetime.date.today()
     url = f'https://edition.pagesuite-professional.co.uk/get_image.aspx?w=1200&pbid={pbid}'
-    return _save_image(url, papername, date=d)
+    r = requests.get(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+    })
+    r.raise_for_status()
+    last_mod = r.headers.get('Last-Modified')
+    if last_mod:
+        dt = datetime.datetime(*email.utils.parsedate(last_mod)[:6], tzinfo=datetime.timezone.utc)
+        actual_date = dt.astimezone(ZoneInfo('America/New_York')).date()
+    else:
+        actual_date = d
+    os.makedirs(_DOWNLOADS_DIR, exist_ok=True)
+    path = os.path.join(_DOWNLOADS_DIR, f'{actual_date.isoformat()}-{papername}.jpg')
+    with open(path, 'wb') as f:
+        f.write(r.content)
+    return path
 
 
 def _fetch_source(source_cfg, papername, d):
