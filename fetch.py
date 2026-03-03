@@ -1,6 +1,6 @@
 import base64
 import datetime
-import email.utils
+import email.utils  # parsedate_to_datetime is stdlib's de facto HTTP date parser
 import os
 import re
 import requests
@@ -145,8 +145,7 @@ def _fetch_pagesuite(pbid, papername, d):
     r.raise_for_status()
     last_mod = r.headers.get('Last-Modified')
     if last_mod:
-        dt = datetime.datetime(*email.utils.parsedate(last_mod)[:6], tzinfo=datetime.timezone.utc)
-        actual_date = dt.astimezone(ZoneInfo('America/New_York')).date()
+        actual_date = email.utils.parsedate_to_datetime(last_mod).astimezone(ZoneInfo('America/New_York')).date()
     else:
         actual_date = d
     os.makedirs(_DOWNLOADS_DIR, exist_ok=True)
