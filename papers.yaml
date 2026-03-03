@@ -57,10 +57,12 @@ papers:
     name: "Boston Globe"
     format: broadsheet
     sources:
-      - source: freedomforum
-        code: MA_BG
       - source: frontpages
         slug: the-boston-globe
+      - source: pagesuite
+        pbid: 2c60291d-c20c-4780-9829-b3d9a12687cf
+      - source: freedomforum
+        code: MA_BG
   nj-star-ledger:
     name: "NJ Star-Ledger"
     format: broadsheet

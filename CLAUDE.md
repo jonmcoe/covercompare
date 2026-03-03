@@ -136,6 +136,7 @@ my-paper:
   | Paper | pbid |
   |---|---|
   | Seattle Times | `84d463e0-c035-4c49-902d-95c722bfe073` |
+  | Boston Globe | `2c60291d-c20c-4780-9829-b3d9a12687cf` |
 
 **`kiosko` source** — 750px wide JPEG, good for papers not on frontpages/freedomforum (e.g. WSJ)
 - Browse index: https://www.kiosko.net/us/ — URL slug is from `/us/np/{slug}.html`
