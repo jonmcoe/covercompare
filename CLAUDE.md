@@ -125,6 +125,18 @@ my-paper:
   | TN_JS | Jackson Sun | frequently stale |
   | WI_SP | Wisconsin State Journal | frequently stale |
 
+**`pagesuite` source** — 1200px wide JPEG, for papers whose e-edition runs on PageSuite (`edition.pagesuite-professional.co.uk`)
+- URL pattern: `https://edition.pagesuite-professional.co.uk/get_image.aspx?w=1200&pbid={pbid}`
+- `pbid` is a fixed UUID per publication — does not change day to day
+- Always returns today's front page; **no historical date support**
+- **How to find a pbid**: visit the paper's "Today's Paper" or replica page, open browser devtools, and look for the `PrintReplicaPromo` JS chunk or any `get_image.aspx?pbid=` reference. Alternatively, fetch the page HTML and search for `pbid=` or `pagesuite`. The UUID appears in the JS that renders the replica promo widget.
+  - Seattle Times example: their `st-todays-paper` WP plugin JS contains `get_image.aspx?w=200&pbid=84d463e0-c035-4c49-902d-95c722bfe073`
+- **Known pbids**:
+
+  | Paper | pbid |
+  |---|---|
+  | Seattle Times | `84d463e0-c035-4c49-902d-95c722bfe073` |
+
 **`kiosko` source** — 750px wide JPEG, good for papers not on frontpages/freedomforum (e.g. WSJ)
 - Browse index: https://www.kiosko.net/us/ — URL slug is from `/us/np/{slug}.html`
 - Date is scraped from the page rather than passed as a parameter — always reflects the most recent available issue, handling publication gaps (e.g. WSJ skips Sundays) automatically
@@ -139,6 +151,7 @@ my-paper:
 | `kiosko` | No — always latest | Scrapes page date; saves under actual paper date |
 | `frontpages` | No — always latest | Scrapes live page; saves under actual paper date |
 | `freedomforum` | No — today only | URL uses day-of-month only, no year/month |
+| `pagesuite` | No — today only | Fixed pbid URL, always serves current edition |
 
 **Choosing between sources for a paper on multiple**: prefer frontpages for resolution; prefer freedomforum for stability (no scraping). If frontpages changes its obfuscation scheme it will break all frontpages fetches at once.
 

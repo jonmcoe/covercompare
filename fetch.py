@@ -14,7 +14,9 @@ def _save_image(url, papername, date=None):
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
     image_res.raise_for_status()
-    ext = os.path.splitext(url.split('?')[0])[1] or '.jpg'
+    ext = os.path.splitext(url.split('?')[0])[1]
+    if ext.lower() not in ('.jpg', '.jpeg', '.png', '.webp', '.gif'):
+        ext = '.jpg'
     if date is None:
         date = datetime.date.today()
     path = os.path.join(_DOWNLOADS_DIR, f'{date.isoformat()}-{papername}{ext}')
@@ -121,6 +123,19 @@ def _fetch_newsday_cloudfront(papername, d):
     return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername, date=d)
 
 
+def _fetch_pagesuite(pbid, papername, d):
+    """Fetch front page from PageSuite e-edition service by publication ID.
+
+    Always returns today's edition — no historical date support.
+    The pbid is a fixed UUID per publication, found in the paper's replica JS.
+
+    e.g. Seattle Times pbid: 84d463e0-c035-4c49-902d-95c722bfe073
+    """
+    d = d or datetime.date.today()
+    url = f'https://edition.pagesuite-professional.co.uk/get_image.aspx?w=1200&pbid={pbid}'
+    return _save_image(url, papername, date=d)
+
+
 def _fetch_source(source_cfg, papername, d):
     """Dispatch a single source config entry to the appropriate fetcher."""
     source = source_cfg['source']
@@ -134,6 +149,8 @@ def _fetch_source(source_cfg, papername, d):
         return _fetch_nypost_scrape(papername, d)
     elif source == 'newsday_cloudfront':
         return _fetch_newsday_cloudfront(papername, d)
+    elif source == 'pagesuite':
+        return _fetch_pagesuite(source_cfg['pbid'], papername, d)
     else:
         raise ValueError(f'Unknown source: {source}')
 

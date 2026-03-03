@@ -215,6 +215,8 @@ papers:
     name: "Seattle Times"
     format: broadsheet
     sources:
+      - source: pagesuite
+        pbid: 84d463e0-c035-4c49-902d-95c722bfe073
       - source: freedomforum
         code: WA_ST
   mercury-news:
