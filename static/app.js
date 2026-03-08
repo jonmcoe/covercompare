@@ -49,7 +49,7 @@ function setUrlPapers(keys) {
     ? `?papers=${keys.join(',')}`
     : window.location.pathname;
   history.replaceState(null, '', url);
-  gtag('event', 'page_view', { page_location: window.location.href });
+  gtag('event', 'paper_selection_change', { page_location: window.location.href });
 }
 
 function matchPreset(keys) {
@@ -467,7 +467,7 @@ function bindAboutModal() {
   const modal = document.getElementById('about-modal');
   const close = document.getElementById('about-close');
 
-  btn.addEventListener('click', () => modal.classList.add('open'));
+  btn.addEventListener('click', () => { modal.classList.add('open'); gtag('event', 'about_open'); });
   close.addEventListener('click', () => modal.classList.remove('open'));
   modal.addEventListener('click', e => {
     if (e.target === modal) modal.classList.remove('open');
