@@ -1,16 +1,18 @@
 import base64
 import datetime
 import email.utils  # parsedate_to_datetime is stdlib's de facto HTTP date parser
+import io
 import os
 import re
 import requests
+from PIL import Image, ImageOps
 from zoneinfo import ZoneInfo
 
 
 _DOWNLOADS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'downloads')
 
 
-def _save_image(url, papername, date=None):
+def _save_image(url, papername, date=None, mirror=False):
     os.makedirs(_DOWNLOADS_DIR, exist_ok=True)
     image_res = requests.get(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -22,8 +24,12 @@ def _save_image(url, papername, date=None):
     if date is None:
         date = datetime.date.today()
     path = os.path.join(_DOWNLOADS_DIR, f'{date.isoformat()}-{papername}{ext}')
-    with open(path, 'wb') as f:
-        f.write(image_res.content)
+    if mirror:
+        img = Image.open(io.BytesIO(image_res.content))
+        ImageOps.mirror(img).save(path)
+    else:
+        with open(path, 'wb') as f:
+            f.write(image_res.content)
     return path
 
 
@@ -61,7 +67,9 @@ def _fetch_frontpages(slug, papername, d):
     m = re.search(r"atob\('([A-Za-z0-9+/=]+)'\)", r.text)
     path = base64.b64decode(m.group(1)).decode('utf-8')
     full_url = 'https://www.frontpages.com' + path
-    return _save_image(full_url, papername, date=actual_date)
+    needs_mirror = bool(re.search(r'id="giornale-img"[^>]*class="[^"]*rttx', r.text) or
+                        re.search(r'class="[^"]*rttx[^"]*"[^>]*id="giornale-img"', r.text))
+    return _save_image(full_url, papername, date=actual_date, mirror=needs_mirror)
 
 
 def _fetch_freedomforum(code, papername, d):
