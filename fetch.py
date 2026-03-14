@@ -127,13 +127,14 @@ def _fetch_nypost_scrape(papername, d):
     return _save_image(m.group(0), papername, date=d)
 
 
-def _fetch_newsday_cloudfront(papername, d):
-    """Newsday CloudFront CDN — direct by date."""
-    d = d or datetime.date.today()
-    return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername, date=d)
+# Newsday CloudFront CDN — was the primary source until ~Mar 2026 when it started returning 403.
+# Newsday migrated to PageSuite (paper.newsday.com → pagesuite eid source). Kept for reference.
+# def _fetch_newsday_cloudfront(papername, d):
+#     d = d or datetime.date.today()
+#     return _save_image(f'https://d2dr22b2lm4tvw.cloudfront.net/ny_nd/{d.isoformat()}/front-page-large.jpg', papername, date=d)
 
 
-def _fetch_pagesuite(pbid, papername, d):
+def _fetch_pagesuite(pbid, papername, d, eid=None):
     """Fetch front page from PageSuite e-edition service by publication ID.
 
     Always returns today's edition — no historical date support.
@@ -143,10 +144,15 @@ def _fetch_pagesuite(pbid, papername, d):
     actual edition date, preventing cache poisoning if the new edition hasn't
     uploaded yet when we fetch.
 
-    e.g. Seattle Times pbid: 84d463e0-c035-4c49-902d-95c722bfe073
+    Two URL variants:
+    - pbid (default): edition.pagesuite-professional.co.uk — e.g. Seattle Times, Boston Globe
+    - eid: edition.pagesuite.com with pnum=1 — e.g. Newsday (paper.newsday.com reader)
     """
     d = d or datetime.date.today()
-    url = f'https://edition.pagesuite-professional.co.uk/get_image.aspx?w=1200&pbid={pbid}'
+    if eid:
+        url = f'https://edition.pagesuite.com/get_image.aspx?w=1200&eid={eid}&pnum=1'
+    else:
+        url = f'https://edition.pagesuite-professional.co.uk/get_image.aspx?w=1200&pbid={pbid}'
     r = requests.get(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
     })
@@ -174,10 +180,8 @@ def _fetch_source(source_cfg, papername, d):
         return _fetch_kiosko(source_cfg['slug'], papername, d)
     elif source == 'nypost_scrape':
         return _fetch_nypost_scrape(papername, d)
-    elif source == 'newsday_cloudfront':
-        return _fetch_newsday_cloudfront(papername, d)
     elif source == 'pagesuite':
-        return _fetch_pagesuite(source_cfg['pbid'], papername, d)
+        return _fetch_pagesuite(source_cfg.get('pbid'), papername, d, eid=source_cfg.get('eid'))
     else:
         raise ValueError(f'Unknown source: {source}')
 

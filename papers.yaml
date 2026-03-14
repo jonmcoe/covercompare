@@ -12,7 +12,8 @@ papers:
     format: tabloid
     trim_whitespace: true
     sources:
-      - source: newsday_cloudfront       # ~1542px, best quality
+      - source: pagesuite
+        eid: 62a68a4c-4acf-40fc-b7d5-4a654a626c47   # 1200px, stable; from paper.newsday.com reader
       - source: freedomforum
         code: NY_ND                      # 700px fallback
   dailynews:
