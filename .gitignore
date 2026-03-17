@@ -1,3 +1,4 @@
+.playwright-mcp/
 downloads/
 generated_images/
 __pycache__
