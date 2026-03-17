@@ -13,7 +13,7 @@ papers:
     trim_whitespace: true
     sources:
       - source: pagesuite
-        eid: 62a68a4c-4acf-40fc-b7d5-4a654a626c47   # 1200px, stable; from paper.newsday.com reader
+        redirect_url: https://paper.newsday.com      # follows redirect to extract current edid
       - source: freedomforum
         code: NY_ND                      # 700px fallback
   dailynews:
