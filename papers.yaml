@@ -248,7 +248,7 @@ papers:
         slug: eldiario
   la-opinion:
     name: "La Opinión"
-    format: broadsheet
+    format: tabloid
     sources:
       - source: kiosko
         slug: laopinion
