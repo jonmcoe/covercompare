@@ -265,3 +265,4 @@ configs:
   new_york: [dailynews, newsday, nypost]
   national: [nytimes, usatoday, wsj, washpost]
   west_coast: [latimes, sfchronicle, seattle-times]
+  spanish: [el-diario-ny, la-opinion, el-nuevo-herald]
