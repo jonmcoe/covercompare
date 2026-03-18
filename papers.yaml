@@ -239,6 +239,26 @@ papers:
       - source: frontpages
         slug: the-sacramento-bee
 
+  # --- Spanish-language ---
+  el-diario-ny:
+    name: "El Diario NY"
+    format: tabloid
+    sources:
+      - source: kiosko
+        slug: eldiario
+  la-opinion:
+    name: "La Opinión"
+    format: broadsheet
+    sources:
+      - source: kiosko
+        slug: laopinion
+  el-nuevo-herald:
+    name: "El Nuevo Herald"
+    format: broadsheet
+    sources:
+      - source: frontpages
+        slug: el-nuevo-herald              # kiosko version is stale; frontpages is fresh
+
 default: [newsday, nypost]
 
 configs:
