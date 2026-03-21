@@ -177,6 +177,25 @@ def _fetch_pagesuite(pbid, papername, d, redirect_url=None):
     return path
 
 
+def _fetch_pressreader(cid, papername, d):
+    """Fetch front page from PressReader/prcdn.co by publication CID.
+
+    The CID is a short numeric code per publication (e.g. 3863 for El Nuevo Día).
+    Issue key format: {cid}{YYYYMMDD}00000000001001 — deterministic, no scraping needed.
+    Image served from t.prcdn.co at scale=200 (~840KB, good quality).
+
+    Find a publication's CID by visiting its epaper page and watching Network tab
+    for requests to GetIssueInfoByCid?cid=XXXX or t.prcdn.co/img?file=XXXX...
+
+    Known CIDs:
+      3863 — El Nuevo Día (Puerto Rico)
+    """
+    d = d or datetime.date.today()
+    issue = f'{cid}{d.strftime("%Y%m%d")}00000000001001'
+    url = f'https://t.prcdn.co/img?file={issue}&page=1&scale=200'
+    return _save_image(url, papername, date=d)
+
+
 def _fetch_source(source_cfg, papername, d):
     """Dispatch a single source config entry to the appropriate fetcher."""
     source = source_cfg['source']
@@ -188,6 +207,8 @@ def _fetch_source(source_cfg, papername, d):
         return _fetch_kiosko(source_cfg['slug'], papername, d, region=source_cfg.get('region', 'us'))
     elif source == 'nypost_scrape':
         return _fetch_nypost_scrape(papername, d)
+    elif source == 'pressreader':
+        return _fetch_pressreader(source_cfg['cid'], papername, d)
     elif source == 'pagesuite':
         return _fetch_pagesuite(source_cfg.get('pbid'), papername, d, redirect_url=source_cfg.get('redirect_url'))
     else:

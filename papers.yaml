@@ -240,6 +240,12 @@ papers:
         slug: the-sacramento-bee
 
   # --- Spanish-language ---
+  el-nuevo-dia:
+    name: "El Nuevo Día"
+    format: broadsheet
+    sources:
+      - source: pressreader
+        cid: 3863                             # CID found via Network tab on epaper.elnuevodia.com
   el-vocero:
     name: "El Vocero"
     format: tabloid
