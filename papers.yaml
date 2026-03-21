@@ -271,6 +271,9 @@ papers:
     sources:
       - source: frontpages
         slug: el-nuevo-herald              # kiosko version is stale; frontpages is fresh
+      - source: pressreader
+        cid: 2023
+        issue_suffix: "00000051001001"     # CID found via Network tab on pressreader.com/usa/el-nuevo-herald
 
 default: [newsday, nypost]
 
