@@ -240,6 +240,13 @@ papers:
         slug: the-sacramento-bee
 
   # --- Spanish-language ---
+  el-vocero:
+    name: "El Vocero"
+    format: tabloid
+    sources:
+      - source: kiosko
+        slug: vocero
+        region: pr
   el-diario-ny:
     name: "El Diario NY"
     format: tabloid
